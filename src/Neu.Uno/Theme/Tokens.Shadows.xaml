@@ -1,0 +1,282 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:utu="using:Uno.Toolkit.UI">
+
+  <!--
+    The depth scale. Six named ShadowCollections; templates reference these and
+    never declare a Shadow inline (CLAUDE.md rules 2 and 3).
+
+    Every collection is exactly two shadows in this order:
+      1. NeuShadowDark  at (+offset, +offset)
+      2. NeuShadowLight at (-offset, -offset)
+    Order matters - a later shadow overlaps an earlier one - so the highlight
+    always lands on top of the shade.
+
+    The collections are duplicated per theme rather than sharing one copy with a
+    ThemeResource color, because that is what the Toolkit documents for theme
+    switching: the ShadowCollection itself must live in the theme dictionary.
+    Consumers bind Shadows="{ThemeResource NeuRaisedMd}".
+
+    Offsets, blurs, spreads, colors and opacities are all StaticResource lookups,
+    so the depth scale and the palette each keep a single source of truth in
+    Tokens.Metrics.xaml and Tokens.Colors.xaml.
+
+    "Default" mirrors "Light" for the same reason it does in Tokens.Colors.xaml.
+  -->
+
+  <ResourceDictionary.ThemeDictionaries>
+
+    <ResourceDictionary x:Key="Light">
+      <utu:ShadowCollection x:Key="NeuRaisedSm">
+        <utu:Shadow OffsetX="{StaticResource NeuDepthSmOffset}"
+                    OffsetY="{StaticResource NeuDepthSmOffset}"
+                    BlurRadius="{StaticResource NeuDepthSmBlur}"
+                    Spread="{StaticResource NeuDepthSmSpread}"
+                    Color="{StaticResource NeuShadowDark}"
+                    Opacity="{StaticResource NeuShadowDarkOpacity}" />
+        <utu:Shadow OffsetX="{StaticResource NeuDepthSmOffsetNegative}"
+                    OffsetY="{StaticResource NeuDepthSmOffsetNegative}"
+                    BlurRadius="{StaticResource NeuDepthSmBlur}"
+                    Spread="{StaticResource NeuDepthSmSpread}"
+                    Color="{StaticResource NeuShadowLight}"
+                    Opacity="{StaticResource NeuShadowLightOpacity}" />
+      </utu:ShadowCollection>
+
+      <utu:ShadowCollection x:Key="NeuRaisedMd">
+        <utu:Shadow OffsetX="{StaticResource NeuDepthMdOffset}"
+                    OffsetY="{StaticResource NeuDepthMdOffset}"
+                    BlurRadius="{StaticResource NeuDepthMdBlur}"
+                    Spread="{StaticResource NeuDepthMdSpread}"
+                    Color="{StaticResource NeuShadowDark}"
+                    Opacity="{StaticResource NeuShadowDarkOpacity}" />
+        <utu:Shadow OffsetX="{StaticResource NeuDepthMdOffsetNegative}"
+                    OffsetY="{StaticResource NeuDepthMdOffsetNegative}"
+                    BlurRadius="{StaticResource NeuDepthMdBlur}"
+                    Spread="{StaticResource NeuDepthMdSpread}"
+                    Color="{StaticResource NeuShadowLight}"
+                    Opacity="{StaticResource NeuShadowLightOpacity}" />
+      </utu:ShadowCollection>
+
+      <utu:ShadowCollection x:Key="NeuRaisedLg">
+        <utu:Shadow OffsetX="{StaticResource NeuDepthLgOffset}"
+                    OffsetY="{StaticResource NeuDepthLgOffset}"
+                    BlurRadius="{StaticResource NeuDepthLgBlur}"
+                    Spread="{StaticResource NeuDepthLgSpread}"
+                    Color="{StaticResource NeuShadowDark}"
+                    Opacity="{StaticResource NeuShadowDarkOpacity}" />
+        <utu:Shadow OffsetX="{StaticResource NeuDepthLgOffsetNegative}"
+                    OffsetY="{StaticResource NeuDepthLgOffsetNegative}"
+                    BlurRadius="{StaticResource NeuDepthLgBlur}"
+                    Spread="{StaticResource NeuDepthLgSpread}"
+                    Color="{StaticResource NeuShadowLight}"
+                    Opacity="{StaticResource NeuShadowLightOpacity}" />
+      </utu:ShadowCollection>
+
+      <utu:ShadowCollection x:Key="NeuInsetSm">
+        <utu:Shadow OffsetX="{StaticResource NeuDepthSmOffset}"
+                    OffsetY="{StaticResource NeuDepthSmOffset}"
+                    BlurRadius="{StaticResource NeuDepthSmBlur}"
+                    Spread="{StaticResource NeuDepthSmSpread}"
+                    Color="{StaticResource NeuShadowDark}"
+                    Opacity="{StaticResource NeuShadowDarkOpacity}"
+                    IsInner="True" />
+        <utu:Shadow OffsetX="{StaticResource NeuDepthSmOffsetNegative}"
+                    OffsetY="{StaticResource NeuDepthSmOffsetNegative}"
+                    BlurRadius="{StaticResource NeuDepthSmBlur}"
+                    Spread="{StaticResource NeuDepthSmSpread}"
+                    Color="{StaticResource NeuShadowLight}"
+                    Opacity="{StaticResource NeuShadowLightOpacity}"
+                    IsInner="True" />
+      </utu:ShadowCollection>
+
+      <utu:ShadowCollection x:Key="NeuInsetMd">
+        <utu:Shadow OffsetX="{StaticResource NeuDepthMdOffset}"
+                    OffsetY="{StaticResource NeuDepthMdOffset}"
+                    BlurRadius="{StaticResource NeuDepthMdBlur}"
+                    Spread="{StaticResource NeuDepthMdSpread}"
+                    Color="{StaticResource NeuShadowDark}"
+                    Opacity="{StaticResource NeuShadowDarkOpacity}"
+                    IsInner="True" />
+        <utu:Shadow OffsetX="{StaticResource NeuDepthMdOffsetNegative}"
+                    OffsetY="{StaticResource NeuDepthMdOffsetNegative}"
+                    BlurRadius="{StaticResource NeuDepthMdBlur}"
+                    Spread="{StaticResource NeuDepthMdSpread}"
+                    Color="{StaticResource NeuShadowLight}"
+                    Opacity="{StaticResource NeuShadowLightOpacity}"
+                    IsInner="True" />
+      </utu:ShadowCollection>
+
+      <!-- Disabled and high contrast: the surface stays, the depth goes. -->
+      <utu:ShadowCollection x:Key="NeuFlat" />
+    </ResourceDictionary>
+
+    <ResourceDictionary x:Key="Dark">
+      <utu:ShadowCollection x:Key="NeuRaisedSm">
+        <utu:Shadow OffsetX="{StaticResource NeuDepthSmOffset}"
+                    OffsetY="{StaticResource NeuDepthSmOffset}"
+                    BlurRadius="{StaticResource NeuDepthSmBlur}"
+                    Spread="{StaticResource NeuDepthSmSpread}"
+                    Color="{StaticResource NeuShadowDark}"
+                    Opacity="{StaticResource NeuShadowDarkOpacity}" />
+        <utu:Shadow OffsetX="{StaticResource NeuDepthSmOffsetNegative}"
+                    OffsetY="{StaticResource NeuDepthSmOffsetNegative}"
+                    BlurRadius="{StaticResource NeuDepthSmBlur}"
+                    Spread="{StaticResource NeuDepthSmSpread}"
+                    Color="{StaticResource NeuShadowLight}"
+                    Opacity="{StaticResource NeuShadowLightOpacity}" />
+      </utu:ShadowCollection>
+
+      <utu:ShadowCollection x:Key="NeuRaisedMd">
+        <utu:Shadow OffsetX="{StaticResource NeuDepthMdOffset}"
+                    OffsetY="{StaticResource NeuDepthMdOffset}"
+                    BlurRadius="{StaticResource NeuDepthMdBlur}"
+                    Spread="{StaticResource NeuDepthMdSpread}"
+                    Color="{StaticResource NeuShadowDark}"
+                    Opacity="{StaticResource NeuShadowDarkOpacity}" />
+        <utu:Shadow OffsetX="{StaticResource NeuDepthMdOffsetNegative}"
+                    OffsetY="{StaticResource NeuDepthMdOffsetNegative}"
+                    BlurRadius="{StaticResource NeuDepthMdBlur}"
+                    Spread="{StaticResource NeuDepthMdSpread}"
+                    Color="{StaticResource NeuShadowLight}"
+                    Opacity="{StaticResource NeuShadowLightOpacity}" />
+      </utu:ShadowCollection>
+
+      <utu:ShadowCollection x:Key="NeuRaisedLg">
+        <utu:Shadow OffsetX="{StaticResource NeuDepthLgOffset}"
+                    OffsetY="{StaticResource NeuDepthLgOffset}"
+                    BlurRadius="{StaticResource NeuDepthLgBlur}"
+                    Spread="{StaticResource NeuDepthLgSpread}"
+                    Color="{StaticResource NeuShadowDark}"
+                    Opacity="{StaticResource NeuShadowDarkOpacity}" />
+        <utu:Shadow OffsetX="{StaticResource NeuDepthLgOffsetNegative}"
+                    OffsetY="{StaticResource NeuDepthLgOffsetNegative}"
+                    BlurRadius="{StaticResource NeuDepthLgBlur}"
+                    Spread="{StaticResource NeuDepthLgSpread}"
+                    Color="{StaticResource NeuShadowLight}"
+                    Opacity="{StaticResource NeuShadowLightOpacity}" />
+      </utu:ShadowCollection>
+
+      <utu:ShadowCollection x:Key="NeuInsetSm">
+        <utu:Shadow OffsetX="{StaticResource NeuDepthSmOffset}"
+                    OffsetY="{StaticResource NeuDepthSmOffset}"
+                    BlurRadius="{StaticResource NeuDepthSmBlur}"
+                    Spread="{StaticResource NeuDepthSmSpread}"
+                    Color="{StaticResource NeuShadowDark}"
+                    Opacity="{StaticResource NeuShadowDarkOpacity}"
+                    IsInner="True" />
+        <utu:Shadow OffsetX="{StaticResource NeuDepthSmOffsetNegative}"
+                    OffsetY="{StaticResource NeuDepthSmOffsetNegative}"
+                    BlurRadius="{StaticResource NeuDepthSmBlur}"
+                    Spread="{StaticResource NeuDepthSmSpread}"
+                    Color="{StaticResource NeuShadowLight}"
+                    Opacity="{StaticResource NeuShadowLightOpacity}"
+                    IsInner="True" />
+      </utu:ShadowCollection>
+
+      <utu:ShadowCollection x:Key="NeuInsetMd">
+        <utu:Shadow OffsetX="{StaticResource NeuDepthMdOffset}"
+                    OffsetY="{StaticResource NeuDepthMdOffset}"
+                    BlurRadius="{StaticResource NeuDepthMdBlur}"
+                    Spread="{StaticResource NeuDepthMdSpread}"
+                    Color="{StaticResource NeuShadowDark}"
+                    Opacity="{StaticResource NeuShadowDarkOpacity}"
+                    IsInner="True" />
+        <utu:Shadow OffsetX="{StaticResource NeuDepthMdOffsetNegative}"
+                    OffsetY="{StaticResource NeuDepthMdOffsetNegative}"
+                    BlurRadius="{StaticResource NeuDepthMdBlur}"
+                    Spread="{StaticResource NeuDepthMdSpread}"
+                    Color="{StaticResource NeuShadowLight}"
+                    Opacity="{StaticResource NeuShadowLightOpacity}"
+                    IsInner="True" />
+      </utu:ShadowCollection>
+
+      <!-- Disabled and high contrast: the surface stays, the depth goes. -->
+      <utu:ShadowCollection x:Key="NeuFlat" />
+    </ResourceDictionary>
+
+    <ResourceDictionary x:Key="Default">
+      <utu:ShadowCollection x:Key="NeuRaisedSm">
+        <utu:Shadow OffsetX="{StaticResource NeuDepthSmOffset}"
+                    OffsetY="{StaticResource NeuDepthSmOffset}"
+                    BlurRadius="{StaticResource NeuDepthSmBlur}"
+                    Spread="{StaticResource NeuDepthSmSpread}"
+                    Color="{StaticResource NeuShadowDark}"
+                    Opacity="{StaticResource NeuShadowDarkOpacity}" />
+        <utu:Shadow OffsetX="{StaticResource NeuDepthSmOffsetNegative}"
+                    OffsetY="{StaticResource NeuDepthSmOffsetNegative}"
+                    BlurRadius="{StaticResource NeuDepthSmBlur}"
+                    Spread="{StaticResource NeuDepthSmSpread}"
+                    Color="{StaticResource NeuShadowLight}"
+                    Opacity="{StaticResource NeuShadowLightOpacity}" />
+      </utu:ShadowCollection>
+
+      <utu:ShadowCollection x:Key="NeuRaisedMd">
+        <utu:Shadow OffsetX="{StaticResource NeuDepthMdOffset}"
+                    OffsetY="{StaticResource NeuDepthMdOffset}"
+                    BlurRadius="{StaticResource NeuDepthMdBlur}"
+                    Spread="{StaticResource NeuDepthMdSpread}"
+                    Color="{StaticResource NeuShadowDark}"
+                    Opacity="{StaticResource NeuShadowDarkOpacity}" />
+        <utu:Shadow OffsetX="{StaticResource NeuDepthMdOffsetNegative}"
+                    OffsetY="{StaticResource NeuDepthMdOffsetNegative}"
+                    BlurRadius="{StaticResource NeuDepthMdBlur}"
+                    Spread="{StaticResource NeuDepthMdSpread}"
+                    Color="{StaticResource NeuShadowLight}"
+                    Opacity="{StaticResource NeuShadowLightOpacity}" />
+      </utu:ShadowCollection>
+
+      <utu:ShadowCollection x:Key="NeuRaisedLg">
+        <utu:Shadow OffsetX="{StaticResource NeuDepthLgOffset}"
+                    OffsetY="{StaticResource NeuDepthLgOffset}"
+                    BlurRadius="{StaticResource NeuDepthLgBlur}"
+                    Spread="{StaticResource NeuDepthLgSpread}"
+                    Color="{StaticResource NeuShadowDark}"
+                    Opacity="{StaticResource NeuShadowDarkOpacity}" />
+        <utu:Shadow OffsetX="{StaticResource NeuDepthLgOffsetNegative}"
+                    OffsetY="{StaticResource NeuDepthLgOffsetNegative}"
+                    BlurRadius="{StaticResource NeuDepthLgBlur}"
+                    Spread="{StaticResource NeuDepthLgSpread}"
+                    Color="{StaticResource NeuShadowLight}"
+                    Opacity="{StaticResource NeuShadowLightOpacity}" />
+      </utu:ShadowCollection>
+
+      <utu:ShadowCollection x:Key="NeuInsetSm">
+        <utu:Shadow OffsetX="{StaticResource NeuDepthSmOffset}"
+                    OffsetY="{StaticResource NeuDepthSmOffset}"
+                    BlurRadius="{StaticResource NeuDepthSmBlur}"
+                    Spread="{StaticResource NeuDepthSmSpread}"
+                    Color="{StaticResource NeuShadowDark}"
+                    Opacity="{StaticResource NeuShadowDarkOpacity}"
+                    IsInner="True" />
+        <utu:Shadow OffsetX="{StaticResource NeuDepthSmOffsetNegative}"
+                    OffsetY="{StaticResource NeuDepthSmOffsetNegative}"
+                    BlurRadius="{StaticResource NeuDepthSmBlur}"
+                    Spread="{StaticResource NeuDepthSmSpread}"
+                    Color="{StaticResource NeuShadowLight}"
+                    Opacity="{StaticResource NeuShadowLightOpacity}"
+                    IsInner="True" />
+      </utu:ShadowCollection>
+
+      <utu:ShadowCollection x:Key="NeuInsetMd">
+        <utu:Shadow OffsetX="{StaticResource NeuDepthMdOffset}"
+                    OffsetY="{StaticResource NeuDepthMdOffset}"
+                    BlurRadius="{StaticResource NeuDepthMdBlur}"
+                    Spread="{StaticResource NeuDepthMdSpread}"
+                    Color="{StaticResource NeuShadowDark}"
+                    Opacity="{StaticResource NeuShadowDarkOpacity}"
+                    IsInner="True" />
+        <utu:Shadow OffsetX="{StaticResource NeuDepthMdOffsetNegative}"
+                    OffsetY="{StaticResource NeuDepthMdOffsetNegative}"
+                    BlurRadius="{StaticResource NeuDepthMdBlur}"
+                    Spread="{StaticResource NeuDepthMdSpread}"
+                    Color="{StaticResource NeuShadowLight}"
+                    Opacity="{StaticResource NeuShadowLightOpacity}"
+                    IsInner="True" />
+      </utu:ShadowCollection>
+
+      <!-- Disabled and high contrast: the surface stays, the depth goes. -->
+      <utu:ShadowCollection x:Key="NeuFlat" />
+    </ResourceDictionary>
+
+  </ResourceDictionary.ThemeDictionaries>
+</ResourceDictionary>

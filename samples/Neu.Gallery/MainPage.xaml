@@ -3,7 +3,8 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:local="using:Neu.Gallery"
       xmlns:views="using:Neu.Gallery.Views"
-      xmlns:utu="using:Uno.Toolkit.UI">
+      xmlns:utu="using:Uno.Toolkit.UI"
+      xmlns:neu="using:Neu.Uno">
 
   <!--
     The specimen sheet: one continuous slab, one flat scroll, sections divided by
@@ -28,9 +29,9 @@
             <StackPanel Grid.Column="0" Spacing="3">
               <TextBlock AutomationProperties.AutomationId="GalleryTitle"
                          Style="{StaticResource NeuDisplay}"
-                         Text="Neu &#183; Tokens" />
+                         Text="Neu &#183; Specimens" />
               <TextBlock Style="{StaticResource NeuLabel}"
-                         Text="COLOR &#183; DEPTH &#183; RADIUS &#183; SPACING &#183; TYPE" />
+                         Text="TOKENS &#183; DEPTH &#183; PRIMITIVES" />
             </StackPanel>
 
             <Button Grid.Column="1"
@@ -41,12 +42,13 @@
                     Click="OnToggleTheme" />
           </Grid>
 
-          <!-- Placeholder for the NeuGroove primitive, which lands in step 3. -->
-          <Border Height="1"
-                  Opacity="0.25"
-                  Background="{ThemeResource NeuInkSecondaryBrush}" />
+          <neu:NeuGroove />
 
           <views:TokensSection />
+
+          <neu:NeuGroove />
+
+          <views:DepthSection />
 
         </StackPanel>
       </Grid>

@@ -17,14 +17,15 @@ namespace Neu.Uno;
 /// </code>
 /// </summary>
 /// <remarks>
-/// As of step 2 this merges the color, metric/radius/spacing and type tokens.
-/// Depth collections land in step 3 and control styles from step 5 on.
+/// As of step 3 this merges the color, metric/radius/spacing, type and depth
+/// tokens. Control styles land from step 5 on.
 /// </remarks>
 public partial class NeuTheme : ResourceDictionary
 {
     private const string TokensColors = "ms-appx:///Neu.Uno/Theme/Tokens.Colors.xaml";
     private const string TokensMetrics = "ms-appx:///Neu.Uno/Theme/Tokens.Metrics.xaml";
     private const string TokensType = "ms-appx:///Neu.Uno/Theme/Tokens.Type.xaml";
+    private const string TokensShadows = "ms-appx:///Neu.Uno/Theme/Tokens.Shadows.xaml";
 
     private Uri? _colorOverrideSource;
     private ResourceDictionary? _colorOverrides;
@@ -72,7 +73,10 @@ public partial class NeuTheme : ResourceDictionary
         MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(TokensMetrics) });
         MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(TokensType) });
 
-        // Step 3 merges Tokens.Shadows.xaml here; step 9 the implicit styles,
-        // gated on UseImplicitStyles.
+        // Shadows last: its collections resolve the colors and metrics above
+        // by StaticResource at parse time.
+        MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(TokensShadows) });
+
+        // Step 9 merges the implicit styles here, gated on UseImplicitStyles.
     }
 }
