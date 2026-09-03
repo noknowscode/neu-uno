@@ -1,11 +1,21 @@
 using System;
+using System.Linq;
 using Microsoft.Extensions.Logging;
+using Neu.Uno;
 using Uno.Resizetizer;
 
 namespace Neu.Gallery;
 
 public partial class App : Application
 {
+    private const string HighContrastSource = "ms-appx:///Neu.Uno/Theme/Neu.HighContrast.xaml";
+
+    /// <summary>
+    /// Whether the high-contrast dictionary was merged this run. Reported on
+    /// the sheet by <see cref="Views.ImplicitSection"/>.
+    /// </summary>
+    public static bool HighContrastMerged { get; private set; }
+
     /// <summary>
     /// Initializes the singleton application object. This is the first line of authored code
     /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -13,6 +23,32 @@ public partial class App : Application
     public App()
     {
         this.InitializeComponent();
+
+#if DEBUG
+        // Step 9 verification hooks. Both have to run here, before any window
+        // content exists: an implicit style is matched when a control is
+        // created, so flipping either one after the sheet is up leaves the
+        // controls already on screen alone.
+        //
+        // NEU_GALLERY_IMPLICIT=1 sets the property on the NeuTheme instance
+        // App.xaml already merged, rather than merging Neu.Implicit.xaml
+        // directly, so the run exercises the public API a consumer would use.
+        if (Environment.GetEnvironmentVariable("NEU_GALLERY_IMPLICIT") == "1" &&
+            Resources.MergedDictionaries.OfType<NeuTheme>().FirstOrDefault() is { } theme)
+        {
+            theme.UseImplicitStyles = true;
+        }
+
+        // NEU_GALLERY_HIGHCONTRAST=1 merges the dictionary over the whole
+        // sheet: it restates the depth collections by name, so every specimen
+        // goes flat and outlined at once, explicit styles included.
+        if (Environment.GetEnvironmentVariable("NEU_GALLERY_HIGHCONTRAST") == "1")
+        {
+            Resources.MergedDictionaries.Add(
+                new ResourceDictionary { Source = new Uri(HighContrastSource) });
+            HighContrastMerged = true;
+        }
+#endif
     }
 
     protected Window? MainWindow { get; private set; }

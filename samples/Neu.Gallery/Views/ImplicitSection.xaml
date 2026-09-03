@@ -1,0 +1,51 @@
+<UserControl x:Class="Neu.Gallery.Views.ImplicitSection"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:neu="using:Neu.Uno">
+
+  <!--
+    Step 9 specimens. Every control in this section is deliberately bare - no
+    Style attribute anywhere - which is the whole point: with NeuTheme's
+    UseImplicitStyles off they render Fluent, and with it on they render Neu
+    without a line of markup changing.
+
+    Run the gallery with NEU_GALLERY_IMPLICIT=1 to turn it on, and
+    NEU_GALLERY_HIGHCONTRAST=1 to merge Neu.HighContrast.xaml over the whole
+    sheet. The caption reports what actually took effect rather than leaving a
+    capture to be read as evidence - the step 7 lesson.
+  -->
+  <StackPanel Spacing="13">
+    <TextBlock Style="{StaticResource NeuTitle}" Text="Implicit styles" />
+    <TextBlock Style="{StaticResource NeuBody}"
+               Foreground="{ThemeResource NeuInkSecondaryBrush}"
+               Text="Bare controls, no Style attribute. Fluent by default; Neu once NeuTheme.UseImplicitStyles is set." />
+
+    <TextBlock x:Name="Report" Style="{StaticResource NeuLabel}" Text="IMPLICIT=? HIGHCONTRAST=?" />
+
+    <StackPanel Orientation="Horizontal" Spacing="34" HorizontalAlignment="Left">
+      <StackPanel Spacing="8">
+        <Button x:Name="BareButton" Content="Bare" />
+        <TextBlock Style="{StaticResource NeuLabel}" Text="Button" />
+      </StackPanel>
+      <StackPanel Spacing="8">
+        <CheckBox Content="Bare" IsChecked="True" />
+        <TextBlock Style="{StaticResource NeuLabel}" Text="CheckBox" />
+      </StackPanel>
+      <StackPanel Spacing="8">
+        <ToggleSwitch IsOn="True" OnContent="On" OffContent="Off" />
+        <TextBlock Style="{StaticResource NeuLabel}" Text="ToggleSwitch" />
+      </StackPanel>
+      <StackPanel Spacing="8">
+        <TextBox Width="160" Text="Bare" />
+        <TextBlock Style="{StaticResource NeuLabel}" Text="TextBox" />
+      </StackPanel>
+      <StackPanel Spacing="8">
+        <ComboBox Width="160" SelectedIndex="0">
+          <ComboBoxItem Content="Bare" />
+          <ComboBoxItem Content="Second" />
+        </ComboBox>
+        <TextBlock Style="{StaticResource NeuLabel}" Text="ComboBox" />
+      </StackPanel>
+    </StackPanel>
+  </StackPanel>
+</UserControl>

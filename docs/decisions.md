@@ -141,6 +141,64 @@ violation of it - it carries no shadow at all.
 
 ---
 
+## D10 - Implicit styles are opt-in, and the keyed style is the primary form
+
+**Decided:** every control style is keyed. `Styles/Neu.Implicit.xaml` holds one
+implicit entry per control, each `BasedOn` its keyed style, and it is merged only
+when `NeuTheme.UseImplicitStyles` is set.
+
+**Reason:** a theme library that restyles an app's controls the moment it is
+referenced is harder to adopt than one that waits to be asked - it cannot be
+tried on one screen. Keeping the implicit entries `BasedOn` rather than
+duplicating the templates means a consumer who overrides a keyed style changes
+both paths at once.
+
+**Tradeoff:** the common case costs a line of markup. And an implicit style
+matches on the exact type, so a derived control - `class MyDialog : ContentDialog`
+being the usual one - still needs the keyed style by hand, which is a trap that
+the opt-in form makes no better.
+
+Sub-part styles (`NeuSliderThumbStyle`, `NeuNumberBoxSpinButtonStyle`,
+`NeuPasswordRevealButtonStyle`, `NeuTextBoxDeleteButtonStyle`,
+`NeuExpanderHeaderStyle`) are deliberately not in the implicit dictionary: each is
+applied by name inside the template that owns it, and an explicit style on a
+template part beats an implicit one, so the implicit `Button` and `ToggleButton`
+entries do not reach them.
+
+---
+
+## D11 - High contrast is a swap of the depth collection names, not a template variant
+
+**Decided:** `Theme/Neu.HighContrast.xaml` restates the six depth collections
+(`NeuRaisedSm/Md/Lg`, `NeuInsetSm/Md`, `NeuFlat`) as one hard-edged `NeuInk`
+outline, and the two rings one step wider. Merge it after `NeuTheme`. It touches
+nothing else - no template, no color.
+
+**Reason:** rule 2 already forces every template to reference depth by name, so
+restating the names reaches every control at once. No template in the library
+knows the file exists, and a consumer's own Neu-anatomy control is covered by it
+for free.
+
+**Tradeoff:** three deviations, all consequences of the collections being shared:
+
+1. The outline lands on every Neu surface, not only on interactives as the
+   Interaction Brief says. A dictionary swap cannot tell a Button from a
+   NeuSurface, and with depth gone an unoutlined surface has no edge at all.
+2. Every depth step becomes the same outline, `NeuFlat` included, so a pressed
+   or checked control keeps its silhouette. It stays readable because rule 5
+   already requires a second channel for every state - depth was never carrying
+   one alone.
+3. The focus and error rings widen from spread 2 to 3 rather than staying put.
+   At equal width they would differ from the resting outline by hue alone, which
+   is the one channel high contrast can least afford to spend.
+
+**Not wired to the OS.** Merging is the consumer's call; nothing here reads the
+system high-contrast setting. Doing that from a `HighContrast` theme dictionary
+is the obvious next move and is left out of step 9 on purpose - it is untested
+behavior on this stack and would have shipped unverified.
+
+---
+
 ## Spike outcomes
 
 ### Step 4 — VSM shadow swap on desktop
@@ -442,3 +500,51 @@ still builds for `net10.0-android`, and only the app's Java d8/r8 step is
 affected. A `Release` desktop build fails separately on
 `Microsoft.NETCore.App.Runtime.Mono.win-x64 10.0.1` not being restorable, which is
 why the perf numbers above are from a Debug build.
+
+### Step 9 - implicit-style dictionary and NeuHighContrast
+
+**Result: both work, and high contrast needed one change the design did not
+anticipate.** Verified on the desktop head in both themes; all four heads build;
+contrast floors pass.
+
+**1. The implicit styles are proved by the app reporting on itself, not by a
+capture.** The gallery's Implicit section is five controls with no `Style`
+attribute anywhere, and its caption prints
+`IMPLICIT=<flag> bare Button templated Neu=<bool>` - the second half walks the
+bare Button's visual tree looking for a `ShadowContainer`, because the flag alone
+would only prove the setter ran, not that a style matched. Off:
+`IMPLICIT=False ... Neu=False` and all five render Fluent. On:
+`IMPLICIT=True ... Neu=True` and all five render Neu. This is the step 7 lesson
+applied up front rather than after a wrong conclusion.
+
+**2. A hard-edged outline drawn outward loses the edges that have no layout
+slack.** The first high-contrast pass used an ordinary (outer) shadow at
+spread 1, blur 0. Most controls were fine, but the expanded Expander body
+rendered with its left and right edges, its four corner arcs, and **no top or
+bottom** - a shape that reads as a rendering bug rather than a layout one. The
+cause is that `ShadowContainer` does not reserve layout space for an outward
+shadow: the body is sized exactly to its content vertically and had slack
+horizontally, so the ring survived on the axis with room. A blurred shadow hides
+this because its falloff has no edge to lose. **The outline is now
+`IsInner="True"`,** which puts it inside the surface's own bounds where nothing
+can clip it, and the Expander body closes.
+
+The two rings stay outward: they wear on a second `ShadowContainer` layered
+behind the surface, which is the field's size with the ring free to spread past
+it, and that has been the arrangement since step 7. Confirmed at spread 3 on a
+really-focused button - `Focus()=True state=Keyboard`, and the amber band is
+visibly wider than the resting ink outline.
+
+**3. A disabled control's outline is full strength, and that is correct.** It
+looks fainter on the sheet, which is the faded label reading back onto the
+border - sampling the pixels shows the same ink as its neighbours.
+`ShadowContainer` ignores `UIElement.Opacity` (step 6, finding 1), so the
+disabled state cannot dim its own outline even if it wanted to.
+
+**Verified by capture:** buttons, toggles, inputs, Expander, Card, Chip, TabBar,
+the depth specimens (all six collections render as the same outline, which is the
+proof every key was restated) and the five bare controls, light and dark.
+
+**Not verified:** that the OS high-contrast setting turns any of this on - it
+does not, by decision (D11). And nothing here was run on android or
+browserwasm, which have been open since verification 4.

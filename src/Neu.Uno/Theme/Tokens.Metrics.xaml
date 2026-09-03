@@ -39,6 +39,17 @@
   <x:Double x:Key="NeuFocusRingBlur">0</x:Double>
 
   <!--
+    High contrast. Neu.HighContrast.xaml restates every depth collection as a
+    single hard-edged outline in NeuInk, so depth disappears and the silhouette
+    is carried by a stroke instead. The focus and error rings stay, one step
+    wider than the outline so a focused control is still told apart from a
+    resting one by width as well as by hue.
+  -->
+  <x:Double x:Key="NeuHighContrastOutlineSpread">1</x:Double>
+  <x:Double x:Key="NeuHighContrastRingSpread">3</x:Double>
+  <x:Double x:Key="NeuHighContrastBlur">0</x:Double>
+
+  <!--
     Radius. Surfaces use Sm/Md, interactives use Md/Pill.
 
     NeuRadiusPill is the WinUI 999 idiom and the Skia renderer reduces it per

@@ -18,7 +18,10 @@ namespace Neu.Uno;
 /// </summary>
 /// <remarks>
 /// Merges the color, metric/radius/spacing, type and depth tokens, then one
-/// keyed-style dictionary per control. Implicit styles are step 9.
+/// keyed-style dictionary per control. Every style is keyed, so referencing the
+/// theme changes nothing until a style is assigned; set
+/// <see cref="UseImplicitStyles"/> to have the stock controls pick their Neu
+/// templates up on their own.
 /// </remarks>
 public partial class NeuTheme : ResourceDictionary
 {
@@ -26,6 +29,7 @@ public partial class NeuTheme : ResourceDictionary
     private const string TokensMetrics = "ms-appx:///Neu.Uno/Theme/Tokens.Metrics.xaml";
     private const string TokensType = "ms-appx:///Neu.Uno/Theme/Tokens.Type.xaml";
     private const string TokensShadows = "ms-appx:///Neu.Uno/Theme/Tokens.Shadows.xaml";
+    private const string ImplicitStyles = "ms-appx:///Neu.Uno/Styles/Neu.Implicit.xaml";
 
     // One file per control, merged after the tokens they reference.
     private static readonly string[] ControlStyles =
@@ -83,12 +87,42 @@ public partial class NeuTheme : ResourceDictionary
         }
     }
 
+    private ResourceDictionary? _implicitStyles;
+
     /// <summary>
     /// When <c>true</c>, also merges the implicit-style dictionary so stock
     /// controls pick up Neu templates without an explicit <c>Style</c>.
     /// </summary>
-    /// <remarks>Honoured from step 9, once <c>Neu.Implicit.xaml</c> exists.</remarks>
-    public bool UseImplicitStyles { get; set; }
+    /// <remarks>
+    /// Off by default: a theme library that restyles an app's controls the
+    /// moment it is referenced is harder to adopt than one that waits to be
+    /// asked. An implicit style matches on the exact type, so a control derived
+    /// from a styled one still needs the keyed style assigned by hand.
+    /// </remarks>
+    public bool UseImplicitStyles
+    {
+        get => _implicitStyles is not null;
+        set
+        {
+            if (value == (_implicitStyles is not null))
+            {
+                return;
+            }
+
+            if (value)
+            {
+                // Appended after the keyed styles merged in the constructor,
+                // which is what lets each implicit entry resolve its BasedOn.
+                _implicitStyles = new ResourceDictionary { Source = new Uri(ImplicitStyles) };
+                MergedDictionaries.Add(_implicitStyles);
+            }
+            else
+            {
+                MergedDictionaries.Remove(_implicitStyles!);
+                _implicitStyles = null;
+            }
+        }
+    }
 
     public NeuTheme()
     {
@@ -105,6 +139,7 @@ public partial class NeuTheme : ResourceDictionary
             MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(style) });
         }
 
-        // Step 9 merges the implicit styles here, gated on UseImplicitStyles.
+        // UseImplicitStyles merges Neu.Implicit.xaml from its setter: XAML sets
+        // properties after construction, so it cannot be read here.
     }
 }

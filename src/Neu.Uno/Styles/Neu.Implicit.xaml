@@ -1,0 +1,65 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+                    xmlns:utu="using:Uno.Toolkit.UI">
+
+  <!--
+    Implicit styles. Opt in with <neu:NeuTheme UseImplicitStyles="True" /> and
+    every stock control below picks up its Neu template without an explicit
+    Style. Leave it off and the keyed styles stay available one at a time,
+    which is the default because a theme library should not restyle an app's
+    controls the moment it is referenced.
+
+    Each entry is BasedOn its keyed style, so this file holds no template and
+    no setter of its own: overriding a keyed style in a consumer dictionary
+    changes both paths at once.
+
+    Sub-part styles are deliberately absent - NeuSliderThumbStyle,
+    NeuNumberBoxSpinButtonStyle, NeuPasswordRevealButtonStyle,
+    NeuTextBoxDeleteButtonStyle and NeuExpanderHeaderStyle are applied by name
+    inside the templates that own them. An explicit Style on a template part
+    beats an implicit one, so the implicit Button and ToggleButton entries below
+    do not reach them.
+
+    Note that an implicit style matches on the exact type: a control derived
+    from one of these - `class MyDialog : ContentDialog` being the common case -
+    keeps its stock chrome and needs the keyed style assigned by hand.
+  -->
+
+  <!-- Buttons -->
+  <Style TargetType="Button" BasedOn="{StaticResource NeuButtonStyle}" />
+  <Style TargetType="ToggleButton" BasedOn="{StaticResource NeuToggleButtonStyle}" />
+  <Style TargetType="CheckBox" BasedOn="{StaticResource NeuCheckBoxStyle}" />
+  <Style TargetType="RadioButton" BasedOn="{StaticResource NeuRadioButtonStyle}" />
+
+  <!-- Range and progress -->
+  <Style TargetType="ToggleSwitch" BasedOn="{StaticResource NeuToggleSwitchStyle}" />
+  <Style TargetType="Slider" BasedOn="{StaticResource NeuSliderStyle}" />
+  <Style TargetType="ProgressBar" BasedOn="{StaticResource NeuProgressBarStyle}" />
+  <Style TargetType="ProgressRing" BasedOn="{StaticResource NeuProgressRingStyle}" />
+
+  <!-- Inputs -->
+  <Style TargetType="TextBox" BasedOn="{StaticResource NeuTextBoxStyle}" />
+  <Style TargetType="PasswordBox" BasedOn="{StaticResource NeuPasswordBoxStyle}" />
+  <Style TargetType="muxc:NumberBox" BasedOn="{StaticResource NeuNumberBoxStyle}" />
+  <Style TargetType="ComboBox" BasedOn="{StaticResource NeuComboBoxStyle}" />
+  <Style TargetType="ComboBoxItem" BasedOn="{StaticResource NeuComboBoxItemStyle}" />
+
+  <!--
+    Lists. The ListView style already sets ItemContainerStyle, so the
+    ListViewItem entry is what covers a ListView the consumer has styled
+    themselves.
+  -->
+  <Style TargetType="ListView" BasedOn="{StaticResource NeuListViewStyle}" />
+  <Style TargetType="ListViewItem" BasedOn="{StaticResource NeuListViewItemStyle}" />
+
+  <!-- Surfaces -->
+  <Style TargetType="utu:Card" BasedOn="{StaticResource NeuCardStyle}" />
+  <Style TargetType="utu:CardContentControl" BasedOn="{StaticResource NeuCardClickableStyle}" />
+  <Style TargetType="utu:Chip" BasedOn="{StaticResource NeuChipStyle}" />
+  <Style TargetType="utu:TabBar" BasedOn="{StaticResource NeuTabBarStyle}" />
+  <Style TargetType="utu:TabBarItem" BasedOn="{StaticResource NeuTabBarItemStyle}" />
+  <Style TargetType="muxc:Expander" BasedOn="{StaticResource NeuExpanderStyle}" />
+  <Style TargetType="ContentDialog" BasedOn="{StaticResource NeuContentDialogStyle}" />
+
+</ResourceDictionary>

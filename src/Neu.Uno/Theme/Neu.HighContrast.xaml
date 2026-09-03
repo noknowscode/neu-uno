@@ -1,0 +1,296 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:utu="using:Uno.Toolkit.UI">
+
+  <!--
+    NeuHighContrast. Merge this after NeuTheme and every Neu control loses its
+    depth and gains a 1px NeuInk outline instead:
+
+      <ResourceDictionary.MergedDictionaries>
+        <neu:NeuTheme />
+        <ResourceDictionary Source="ms-appx:///Neu.Uno/Theme/Neu.HighContrast.xaml" />
+      </ResourceDictionary.MergedDictionaries>
+
+    It restates the six depth collections and nothing else. Because templates
+    reference depth only by name (CLAUDE.md rule 2), restating the names is
+    enough to reach every control at once - no template in the library knows
+    this file exists, and a consumer's own Neu-anatomy control is covered too.
+
+    Every depth step becomes the same outline, NeuFlat included. That is
+    deliberate: a pressed or checked control must not lose its silhouette, and
+    it stays legible because rule 5 already requires a second channel - a glyph,
+    an ink change, an amber bar - for every state. Depth was never carrying a
+    state on its own.
+
+    The outline is an INNER shadow, which is not a stylistic choice. An outward
+    ring needs a pixel of layout slack on every side and silently loses the
+    edges that do not have it: drawn outward, an Expander body sized exactly to
+    its content rendered with its left and right edges and no top or bottom.
+    An inner ring is inside the surface's own bounds, so nothing can clip it.
+
+    Collapsing NeuFlat to the outline is the first of three deviations from
+    the Interaction Brief. The other two, all of them recorded in
+    docs/decisions.md as D11:
+
+    1. The outline lands on every Neu surface, not only on interactives. The
+       collections are shared, so a dictionary swap cannot tell a Button from a
+       NeuSurface. With depth gone, an unoutlined surface has no edge at all.
+    2. The focus and error rings widen from spread 2 to 3 rather than staying
+       put. At the same width they would differ from the resting outline by hue
+       alone, which is the one channel high contrast is least able to spend.
+
+    Colors are untouched: the palette already clears the contrast floors in
+    CLAUDE.md rule 12 in both themes, enforced by tools/contrast-check.ps1.
+  -->
+
+  <ResourceDictionary.ThemeDictionaries>
+
+    <ResourceDictionary x:Key="Light">
+      <!-- Every depth step is the same outline: there is no depth left to read. -->
+      <utu:ShadowCollection x:Key="NeuRaisedSm">
+        <utu:Shadow IsInner="True"
+                    OffsetX="0"
+                    OffsetY="0"
+                    BlurRadius="{StaticResource NeuHighContrastBlur}"
+                    Spread="{StaticResource NeuHighContrastOutlineSpread}"
+                    Color="{StaticResource NeuInk}"
+                    Opacity="1" />
+      </utu:ShadowCollection>
+
+      <utu:ShadowCollection x:Key="NeuRaisedMd">
+        <utu:Shadow IsInner="True"
+                    OffsetX="0"
+                    OffsetY="0"
+                    BlurRadius="{StaticResource NeuHighContrastBlur}"
+                    Spread="{StaticResource NeuHighContrastOutlineSpread}"
+                    Color="{StaticResource NeuInk}"
+                    Opacity="1" />
+      </utu:ShadowCollection>
+
+      <utu:ShadowCollection x:Key="NeuRaisedLg">
+        <utu:Shadow IsInner="True"
+                    OffsetX="0"
+                    OffsetY="0"
+                    BlurRadius="{StaticResource NeuHighContrastBlur}"
+                    Spread="{StaticResource NeuHighContrastOutlineSpread}"
+                    Color="{StaticResource NeuInk}"
+                    Opacity="1" />
+      </utu:ShadowCollection>
+
+      <utu:ShadowCollection x:Key="NeuInsetSm">
+        <utu:Shadow IsInner="True"
+                    OffsetX="0"
+                    OffsetY="0"
+                    BlurRadius="{StaticResource NeuHighContrastBlur}"
+                    Spread="{StaticResource NeuHighContrastOutlineSpread}"
+                    Color="{StaticResource NeuInk}"
+                    Opacity="1" />
+      </utu:ShadowCollection>
+
+      <utu:ShadowCollection x:Key="NeuInsetMd">
+        <utu:Shadow IsInner="True"
+                    OffsetX="0"
+                    OffsetY="0"
+                    BlurRadius="{StaticResource NeuHighContrastBlur}"
+                    Spread="{StaticResource NeuHighContrastOutlineSpread}"
+                    Color="{StaticResource NeuInk}"
+                    Opacity="1" />
+      </utu:ShadowCollection>
+
+      <utu:ShadowCollection x:Key="NeuFlat">
+        <utu:Shadow IsInner="True"
+                    OffsetX="0"
+                    OffsetY="0"
+                    BlurRadius="{StaticResource NeuHighContrastBlur}"
+                    Spread="{StaticResource NeuHighContrastOutlineSpread}"
+                    Color="{StaticResource NeuInk}"
+                    Opacity="1" />
+      </utu:ShadowCollection>
+
+      <!-- Wider than the outline, so focus and error read on width, not hue alone. -->
+      <utu:ShadowCollection x:Key="NeuFocusRing">
+        <utu:Shadow OffsetX="0"
+                    OffsetY="0"
+                    BlurRadius="{StaticResource NeuHighContrastBlur}"
+                    Spread="{StaticResource NeuHighContrastRingSpread}"
+                    Color="{StaticResource NeuAccent}"
+                    Opacity="1" />
+      </utu:ShadowCollection>
+
+      <utu:ShadowCollection x:Key="NeuAlertRing">
+        <utu:Shadow OffsetX="0"
+                    OffsetY="0"
+                    BlurRadius="{StaticResource NeuHighContrastBlur}"
+                    Spread="{StaticResource NeuHighContrastRingSpread}"
+                    Color="{StaticResource NeuAlert}"
+                    Opacity="1" />
+      </utu:ShadowCollection>
+    </ResourceDictionary>
+
+    <ResourceDictionary x:Key="Dark">
+      <!-- Every depth step is the same outline: there is no depth left to read. -->
+      <utu:ShadowCollection x:Key="NeuRaisedSm">
+        <utu:Shadow IsInner="True"
+                    OffsetX="0"
+                    OffsetY="0"
+                    BlurRadius="{StaticResource NeuHighContrastBlur}"
+                    Spread="{StaticResource NeuHighContrastOutlineSpread}"
+                    Color="{StaticResource NeuInk}"
+                    Opacity="1" />
+      </utu:ShadowCollection>
+
+      <utu:ShadowCollection x:Key="NeuRaisedMd">
+        <utu:Shadow IsInner="True"
+                    OffsetX="0"
+                    OffsetY="0"
+                    BlurRadius="{StaticResource NeuHighContrastBlur}"
+                    Spread="{StaticResource NeuHighContrastOutlineSpread}"
+                    Color="{StaticResource NeuInk}"
+                    Opacity="1" />
+      </utu:ShadowCollection>
+
+      <utu:ShadowCollection x:Key="NeuRaisedLg">
+        <utu:Shadow IsInner="True"
+                    OffsetX="0"
+                    OffsetY="0"
+                    BlurRadius="{StaticResource NeuHighContrastBlur}"
+                    Spread="{StaticResource NeuHighContrastOutlineSpread}"
+                    Color="{StaticResource NeuInk}"
+                    Opacity="1" />
+      </utu:ShadowCollection>
+
+      <utu:ShadowCollection x:Key="NeuInsetSm">
+        <utu:Shadow IsInner="True"
+                    OffsetX="0"
+                    OffsetY="0"
+                    BlurRadius="{StaticResource NeuHighContrastBlur}"
+                    Spread="{StaticResource NeuHighContrastOutlineSpread}"
+                    Color="{StaticResource NeuInk}"
+                    Opacity="1" />
+      </utu:ShadowCollection>
+
+      <utu:ShadowCollection x:Key="NeuInsetMd">
+        <utu:Shadow IsInner="True"
+                    OffsetX="0"
+                    OffsetY="0"
+                    BlurRadius="{StaticResource NeuHighContrastBlur}"
+                    Spread="{StaticResource NeuHighContrastOutlineSpread}"
+                    Color="{StaticResource NeuInk}"
+                    Opacity="1" />
+      </utu:ShadowCollection>
+
+      <utu:ShadowCollection x:Key="NeuFlat">
+        <utu:Shadow IsInner="True"
+                    OffsetX="0"
+                    OffsetY="0"
+                    BlurRadius="{StaticResource NeuHighContrastBlur}"
+                    Spread="{StaticResource NeuHighContrastOutlineSpread}"
+                    Color="{StaticResource NeuInk}"
+                    Opacity="1" />
+      </utu:ShadowCollection>
+
+      <!-- Wider than the outline, so focus and error read on width, not hue alone. -->
+      <utu:ShadowCollection x:Key="NeuFocusRing">
+        <utu:Shadow OffsetX="0"
+                    OffsetY="0"
+                    BlurRadius="{StaticResource NeuHighContrastBlur}"
+                    Spread="{StaticResource NeuHighContrastRingSpread}"
+                    Color="{StaticResource NeuAccent}"
+                    Opacity="1" />
+      </utu:ShadowCollection>
+
+      <utu:ShadowCollection x:Key="NeuAlertRing">
+        <utu:Shadow OffsetX="0"
+                    OffsetY="0"
+                    BlurRadius="{StaticResource NeuHighContrastBlur}"
+                    Spread="{StaticResource NeuHighContrastRingSpread}"
+                    Color="{StaticResource NeuAlert}"
+                    Opacity="1" />
+      </utu:ShadowCollection>
+    </ResourceDictionary>
+
+    <ResourceDictionary x:Key="Default">
+      <!-- Every depth step is the same outline: there is no depth left to read. -->
+      <utu:ShadowCollection x:Key="NeuRaisedSm">
+        <utu:Shadow IsInner="True"
+                    OffsetX="0"
+                    OffsetY="0"
+                    BlurRadius="{StaticResource NeuHighContrastBlur}"
+                    Spread="{StaticResource NeuHighContrastOutlineSpread}"
+                    Color="{StaticResource NeuInk}"
+                    Opacity="1" />
+      </utu:ShadowCollection>
+
+      <utu:ShadowCollection x:Key="NeuRaisedMd">
+        <utu:Shadow IsInner="True"
+                    OffsetX="0"
+                    OffsetY="0"
+                    BlurRadius="{StaticResource NeuHighContrastBlur}"
+                    Spread="{StaticResource NeuHighContrastOutlineSpread}"
+                    Color="{StaticResource NeuInk}"
+                    Opacity="1" />
+      </utu:ShadowCollection>
+
+      <utu:ShadowCollection x:Key="NeuRaisedLg">
+        <utu:Shadow IsInner="True"
+                    OffsetX="0"
+                    OffsetY="0"
+                    BlurRadius="{StaticResource NeuHighContrastBlur}"
+                    Spread="{StaticResource NeuHighContrastOutlineSpread}"
+                    Color="{StaticResource NeuInk}"
+                    Opacity="1" />
+      </utu:ShadowCollection>
+
+      <utu:ShadowCollection x:Key="NeuInsetSm">
+        <utu:Shadow IsInner="True"
+                    OffsetX="0"
+                    OffsetY="0"
+                    BlurRadius="{StaticResource NeuHighContrastBlur}"
+                    Spread="{StaticResource NeuHighContrastOutlineSpread}"
+                    Color="{StaticResource NeuInk}"
+                    Opacity="1" />
+      </utu:ShadowCollection>
+
+      <utu:ShadowCollection x:Key="NeuInsetMd">
+        <utu:Shadow IsInner="True"
+                    OffsetX="0"
+                    OffsetY="0"
+                    BlurRadius="{StaticResource NeuHighContrastBlur}"
+                    Spread="{StaticResource NeuHighContrastOutlineSpread}"
+                    Color="{StaticResource NeuInk}"
+                    Opacity="1" />
+      </utu:ShadowCollection>
+
+      <utu:ShadowCollection x:Key="NeuFlat">
+        <utu:Shadow IsInner="True"
+                    OffsetX="0"
+                    OffsetY="0"
+                    BlurRadius="{StaticResource NeuHighContrastBlur}"
+                    Spread="{StaticResource NeuHighContrastOutlineSpread}"
+                    Color="{StaticResource NeuInk}"
+                    Opacity="1" />
+      </utu:ShadowCollection>
+
+      <!-- Wider than the outline, so focus and error read on width, not hue alone. -->
+      <utu:ShadowCollection x:Key="NeuFocusRing">
+        <utu:Shadow OffsetX="0"
+                    OffsetY="0"
+                    BlurRadius="{StaticResource NeuHighContrastBlur}"
+                    Spread="{StaticResource NeuHighContrastRingSpread}"
+                    Color="{StaticResource NeuAccent}"
+                    Opacity="1" />
+      </utu:ShadowCollection>
+
+      <utu:ShadowCollection x:Key="NeuAlertRing">
+        <utu:Shadow OffsetX="0"
+                    OffsetY="0"
+                    BlurRadius="{StaticResource NeuHighContrastBlur}"
+                    Spread="{StaticResource NeuHighContrastRingSpread}"
+                    Color="{StaticResource NeuAlert}"
+                    Opacity="1" />
+      </utu:ShadowCollection>
+    </ResourceDictionary>
+
+  </ResourceDictionary.ThemeDictionaries>
+
+</ResourceDictionary>

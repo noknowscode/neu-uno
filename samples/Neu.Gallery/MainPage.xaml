@@ -8,12 +8,12 @@
 
   <!--
     The specimen sheet: one continuous slab, one flat scroll, sections divided by
-    a groove. Step 2 has a single section, so there is no jump list yet; it
-    arrives with the second section.
+    a groove.
 
-    The theme toggle is a stock WinUI Button on purpose - Neu control styles do
-    not exist until step 5, and a Fluent button next to Neu tokens makes that
-    obvious rather than hiding it.
+    The theme toggle carries no Style, which is now doing double duty: it is a
+    Fluent button next to Neu tokens by default, and it is the one control
+    outside the Implicit section that shows an implicit style reaching a control
+    nobody dressed by hand.
   -->
   <Grid x:Name="Root" Background="{ThemeResource NeuCanvasBrush}">
     <ScrollViewer x:Name="Sheet" IsTabStop="True">
@@ -31,7 +31,7 @@
                          Style="{StaticResource NeuDisplay}"
                          Text="Neu &#183; Specimens" />
               <TextBlock Style="{StaticResource NeuLabel}"
-                         Text="TOKENS &#183; DEPTH &#183; PRIMITIVES &#183; BUTTONS &#183; RANGE &#183; INPUTS &#183; SURFACES" />
+                         Text="TOKENS &#183; DEPTH &#183; PRIMITIVES &#183; BUTTONS &#183; RANGE &#183; INPUTS &#183; SURFACES &#183; IMPLICIT" />
             </StackPanel>
 
             <Button Grid.Column="1"
@@ -65,6 +65,10 @@
           <neu:NeuGroove />
 
           <views:SurfacesSection />
+
+          <neu:NeuGroove />
+
+          <views:ImplicitSection />
 
         </StackPanel>
       </Grid>
