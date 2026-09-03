@@ -22,7 +22,19 @@ public sealed partial class MainPage : Page
         if (Environment.GetEnvironmentVariable("NEU_GALLERY_SCROLL") is { Length: > 0 } raw &&
             double.TryParse(raw, out var offset))
         {
+            // Re-applied on every extent change, not just once on Loaded: the
+            // first ChangeView runs before the sheet has finished measuring, so
+            // a request to park at the bottom clamps to whatever the extent was
+            // at that moment and the last section stays below the fold.
             Sheet.Loaded += (_, _) => Sheet.ChangeView(null, offset, null, disableAnimation: true);
+            Sheet.SizeChanged += (_, _) => Sheet.ChangeView(null, offset, null, disableAnimation: true);
+            Sheet.LayoutUpdated += (_, _) =>
+            {
+                if (Math.Abs(Sheet.VerticalOffset - Math.Min(offset, Sheet.ScrollableHeight)) > 0.5)
+                {
+                    Sheet.ChangeView(null, offset, null, disableAnimation: true);
+                }
+            };
         }
 #endif
     }

@@ -207,6 +207,14 @@ The Button and ToggleButton are unaffected because their containers carry no exp
 size and fill a Grid cell, which does stretch the child.
 
 **2. The focus ring renders; entering the Focused state headlessly does not.**
+> **Corrected in step 7 - the second half of this heading is wrong.** `Focus()`
+> does succeed from a headless run and the Focused state *is* entered: the
+> gallery now reports `Focus()=True state=Keyboard` and the amber ring paints on
+> both a Button and a TextBox. What actually produced the step 5 negative was
+> two capture hooks calling `Focus()` on the same tick, so whichever ran last
+> took focus and the other specimen rendered at rest. Nothing in the templates
+> needed fixing. The paragraph below is kept as written, because the two dead
+> ends it records (blur 0, and the ring being buried) are still true findings.
 The ring anatomy is sound - proved by making `NeuFocusRing` the FocusRing container's
 default shadow and capturing: a crisp 2px amber band appears around every button,
 clearly legible over the Surface's own RaisedMd shadow. So the layering (ring container
@@ -283,3 +291,58 @@ off, not by collapsing it.
 slider thumb. Synthesised pointer input cannot be aimed at this window from a headless
 run - it lands in Hot Design - so both were verified by rendering their states, not by
 driving them. Same gap as the focus ring in step 5, and the same fix: a human pass.
+
+### Step 7 — TextBox, PasswordBox, NumberBox, ComboBox
+
+**Result: the focus ring layer is real and verified.** Every input is an InsetSm
+well with a second ShadowContainer behind it carrying `NeuFocusRing` at spread 2,
+blur 0. Confirmed on the running app in both themes, with the gallery reporting
+the live `FocusState` next to the specimen rather than leaving a capture to be
+read as evidence. Four heads build; contrast floors pass.
+
+**1. The step 5 focus finding was wrong, and this is how it was caught.**
+Two capture hooks were calling `Focus()` on the same 1.5s tick - one in the
+Buttons row, one in the Inputs row - so whichever ran last took focus and the
+other specimen photographed at rest. In step 5 only the Buttons hook existed, but
+the same class of mistake (reading "no ring in the capture" as "the state is
+never entered") produced a confident and incorrect conclusion. **A capture that
+shows the absence of something is not evidence until the mechanism reports its
+own state.** The gallery now prints `Focus()=<bool> state=<FocusState>` beside
+the focused specimen, and `NEU_GALLERY_FOCUS` picks which single row may take
+focus in a run.
+
+**2. Neither container may carry an explicit size.**
+Both the ring and the well fill one single-cell Grid sized by the well's content.
+A ShadowContainer that fills a cell stretches its child, so the empty ring Grid
+comes out exactly the field's size - whereas a container with an explicit size
+does not stretch its child at all (the RadioButton finding in step 5). This is
+why the input family needs no hard-coded dimensions while the radio and switch do.
+
+**3. Required parts are typed, not just named.**
+`ContentElement` must be a ScrollViewer and `BorderElement` a Border; TextBox and
+PasswordBox resolve both by name *and* cast. NumberBox resolves `InputBox` as a
+TextBox and drives text, selection and validation through it, so it stays a
+TextBox - stripped to `BorderThickness=0` and a transparent Background rather
+than given the Neu TextBox style, which would nest a second well inside the
+first. ComboBox resolves `Popup`, `PopupBorder`, `ScrollViewer` and
+`ItemsPresenter`. All part names were read off the running stock controls.
+
+**4. Error is composed by the app, not by the control.**
+WinUI inputs have no error visual state and no error property, so there is
+nothing for a template to react to. The library ships the `NeuAlertRing`
+collection and the gallery demonstrates the composition - the field wrapped in a
+container wearing that ring, with the message below in `NeuAlert` ink. **A
+per-instance mechanism (an attached `HasError`) would be the better answer and is
+deliberately not taken here:** it is public API on the library, which is a
+decision to make explicitly rather than as a side effect of step 7.
+
+**Deviation from the Interaction Brief:** disabled inputs keep the well at
+InsetSm and fade only the ink. `Flat` would erase an empty field completely -
+the same reason the slider thumb and switch knob stay raised when disabled
+(step 6, finding 2). "Disabled: Flat" holds only for controls that carry content.
+
+**Also replaced:** ComboBox's chevron is a Path, not the stock `AnimatedIcon`,
+which needs a generated Lottie source; it rotates 180 degrees while open, which
+is the open state's second channel. ComboBox item selection is an amber leading
+bar rather than a filled row, so the drop-down does not spend the view's one
+amber fill.

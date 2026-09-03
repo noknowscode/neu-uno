@@ -1,0 +1,209 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+                    xmlns:utu="using:Uno.Toolkit.UI">
+
+  <!--
+    NumberBox. The well and ring belong to the NumberBox itself; the InputBox it
+    hosts is stripped to bare text.
+
+    NumberBox resolves InputBox as a TextBox and drives text, selection and
+    validation through it, so it stays a TextBox. It is not given the Neu
+    TextBox style - that would put a second well inside this one. Setting
+    BorderThickness 0 and a transparent Background on the stock template is
+    enough to leave just the glyphs.
+
+    Spin buttons are inline only. Compact mode puts them in UpDownPopup, which
+    is a Popup the control opens on focus; both RepeatButtons are resolved by
+    name whichever mode is set, so both live in the inline row and the popup is
+    present but empty. A spinner is a small raised slab - the one place an
+    extrusion sits next to a well - at RaisedSm, pressing to InsetSm.
+  -->
+
+  <Style x:Key="NeuNumberBoxSpinButtonStyle" TargetType="RepeatButton">
+    <Setter Property="Width" Value="28" />
+    <Setter Property="Height" Value="28" />
+    <Setter Property="Background" Value="{ThemeResource NeuSurfaceBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource NeuInkBrush}" />
+    <Setter Property="IsTabStop" Value="False" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="RepeatButton">
+          <Grid>
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup x:Name="CommonStates">
+                <VisualState x:Name="Normal" />
+                <VisualState x:Name="PointerOver">
+                  <VisualState.Setters>
+                    <Setter Target="SpinSurface.Background" Value="{ThemeResource NeuSurfaceHoverBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Pressed">
+                  <VisualState.Setters>
+                    <Setter Target="SpinSurface.Shadows" Value="{ThemeResource NeuInsetSm}" />
+                    <Setter Target="SpinGlyph.Stroke" Value="{ThemeResource NeuAccentBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Disabled">
+                  <VisualState.Setters>
+                    <Setter Target="SpinGlyph.Opacity" Value="{ThemeResource NeuInkDisabledOpacity}" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+
+            <utu:ShadowContainer x:Name="SpinSurface"
+                                 Width="28"
+                                 Height="28"
+                                 Background="{TemplateBinding Background}"
+                                 CornerRadius="{ThemeResource NeuRadiusSm}"
+                                 Shadows="{ThemeResource NeuRaisedSm}">
+              <Grid Width="28" Height="28" CornerRadius="{ThemeResource NeuRadiusSm}">
+                <Path x:Name="SpinGlyph"
+                      Data="{TemplateBinding Content}"
+                      Stroke="{TemplateBinding Foreground}"
+                      StrokeThickness="1.5"
+                      StrokeStartLineCap="Round"
+                      StrokeEndLineCap="Round"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center" />
+              </Grid>
+            </utu:ShadowContainer>
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="NeuNumberBoxStyle" TargetType="muxc:NumberBox">
+    <Setter Property="Background" Value="{ThemeResource NeuSurfaceBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource NeuInkBrush}" />
+    <Setter Property="CornerRadius" Value="{ThemeResource NeuRadiusMd}" />
+    <Setter Property="MinHeight" Value="{ThemeResource NeuTouchTargetMin}" />
+    <Setter Property="MinWidth" Value="144" />
+    <Setter Property="FontSize" Value="{ThemeResource NeuBodyFontSize}" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="UseSystemFocusVisuals" Value="False" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="muxc:NumberBox">
+          <Grid x:Name="Root">
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="*" />
+              <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup x:Name="CommonStates">
+                <VisualState x:Name="Normal" />
+
+                <VisualState x:Name="PointerOver">
+                  <VisualState.Setters>
+                    <Setter Target="Well.Background" Value="{ThemeResource NeuSurfaceHoverBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="Focused">
+                  <VisualState.Setters>
+                    <Setter Target="FocusRing.Shadows" Value="{ThemeResource NeuFocusRing}" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="Disabled">
+                  <VisualState.Setters>
+                    <Setter Target="InputBox.Opacity" Value="{ThemeResource NeuInkDisabledOpacity}" />
+                    <Setter Target="HeaderContentPresenter.Opacity" Value="{ThemeResource NeuInkDisabledOpacity}" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+
+              <VisualStateGroup x:Name="SpinButtonStates">
+                <VisualState x:Name="SpinButtonsCollapsed" />
+                <VisualState x:Name="SpinButtonsVisible">
+                  <VisualState.Setters>
+                    <Setter Target="SpinRow.Visibility" Value="Visible" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+
+            <ContentPresenter x:Name="HeaderContentPresenter"
+                              Grid.Row="0"
+                              Content="{TemplateBinding Header}"
+                              ContentTemplate="{TemplateBinding HeaderTemplate}"
+                              Foreground="{ThemeResource NeuInkSecondaryBrush}"
+                              FontSize="{ThemeResource NeuLabelFontSize}"
+                              Margin="0,0,0,8"
+                              Visibility="Collapsed"
+                              AutomationProperties.AccessibilityView="Raw" />
+
+            <Grid Grid.Row="1" MinHeight="{ThemeResource NeuTouchTargetMin}">
+              <utu:ShadowContainer x:Name="FocusRing"
+                                   Background="{TemplateBinding Background}"
+                                   CornerRadius="{TemplateBinding CornerRadius}"
+                                   Shadows="{ThemeResource NeuFlat}">
+                <Grid CornerRadius="{TemplateBinding CornerRadius}" />
+              </utu:ShadowContainer>
+
+              <utu:ShadowContainer x:Name="Well"
+                                   Background="{TemplateBinding Background}"
+                                   CornerRadius="{TemplateBinding CornerRadius}"
+                                   Shadows="{ThemeResource NeuInsetSm}">
+                <Grid CornerRadius="{TemplateBinding CornerRadius}">
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                  </Grid.ColumnDefinitions>
+
+                  <TextBox x:Name="InputBox"
+                           Grid.Column="0"
+                           Background="Transparent"
+                           BorderThickness="0"
+                           Foreground="{TemplateBinding Foreground}"
+                           FontSize="{TemplateBinding FontSize}"
+                           Padding="13,0"
+                           MinHeight="0"
+                           MinWidth="0"
+                           VerticalAlignment="Center"
+                           VerticalContentAlignment="Center"
+                           UseSystemFocusVisuals="False" />
+
+                  <StackPanel x:Name="SpinRow"
+                              Grid.Column="1"
+                              Orientation="Horizontal"
+                              Spacing="5"
+                              Margin="0,0,8,0"
+                              VerticalAlignment="Center"
+                              Visibility="Collapsed">
+                    <RepeatButton x:Name="Decrease"
+                                  Content="M0,4 L10,4"
+                                  Style="{StaticResource NeuNumberBoxSpinButtonStyle}"
+                                  AutomationProperties.AccessibilityView="Raw" />
+                    <RepeatButton x:Name="Increase"
+                                  Content="M0,5 L10,5 M5,0 L5,10"
+                                  Style="{StaticResource NeuNumberBoxSpinButtonStyle}"
+                                  AutomationProperties.AccessibilityView="Raw" />
+                  </StackPanel>
+                </Grid>
+              </utu:ShadowContainer>
+            </Grid>
+
+            <!-- Present because NumberBox resolves it; compact mode is not styled. -->
+            <Popup x:Name="UpDownPopup" />
+
+            <ContentPresenter x:Name="DescriptionPresenter"
+                              Grid.Row="2"
+                              Content="{TemplateBinding Description}"
+                              Foreground="{ThemeResource NeuInkSecondaryBrush}"
+                              FontSize="{ThemeResource NeuLabelFontSize}"
+                              Margin="0,5,0,0"
+                              AutomationProperties.AccessibilityView="Raw" />
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+</ResourceDictionary>

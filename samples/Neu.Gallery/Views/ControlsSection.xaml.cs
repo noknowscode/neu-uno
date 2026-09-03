@@ -23,13 +23,17 @@ public sealed partial class ControlsSection : UserControl
                 {
                     ((DispatcherTimer)t!).Stop();
                     VisualStateManager.GoToState(PressedButton, "Pressed", true);
-                    FocusedButton.Focus(FocusState.Keyboard);
+                    // Only one section may take focus per run, or the two hooks
+                    // race and the loser's specimen silently shows no ring.
+                    if (Environment.GetEnvironmentVariable("NEU_GALLERY_FOCUS") == "button")
+                    {
+                        var accepted = FocusedButton.Focus(FocusState.Keyboard);
+                        ButtonFocusReport.Text = $"Focus()={accepted} state={FocusedButton.FocusState}";
+                    }
 
-                    // Real focus, not GoToState: FocusStates is driven by the
-                    // control's own focus manager, which re-asserts Unfocused over a
-                    // forced state. This only takes when the window is foreground, so
-                    // a headless capture run shows this specimen at rest - the ring
-                    // itself is verified separately (see decisions.md, step 5).
+                    // Real focus, not GoToState. Verified in step 7: Focus()
+                    // succeeds from a headless run and the ring paints, so the
+                    // step 5 note claiming otherwise was wrong.
                 };
                 timer.Start();
             };

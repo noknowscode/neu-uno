@@ -40,7 +40,7 @@
         </StackPanel>
         <StackPanel Spacing="8">
           <Button x:Name="FocusedButton" Style="{StaticResource NeuButtonStyle}" Content="Focused" />
-          <TextBlock Style="{StaticResource NeuLabel}" Text="Focused" />
+          <TextBlock x:Name="ButtonFocusReport" Style="{StaticResource NeuLabel}" Text="Focused" />
         </StackPanel>
         <StackPanel Spacing="8">
           <Button Style="{StaticResource NeuButtonStyle}" Content="Disabled" IsEnabled="False" />

@@ -38,6 +38,10 @@ public partial class NeuTheme : ResourceDictionary
         "ms-appx:///Neu.Uno/Styles/Neu.Slider.xaml",
         "ms-appx:///Neu.Uno/Styles/Neu.ProgressBar.xaml",
         "ms-appx:///Neu.Uno/Styles/Neu.ProgressRing.xaml",
+        "ms-appx:///Neu.Uno/Styles/Neu.TextBox.xaml",
+        "ms-appx:///Neu.Uno/Styles/Neu.PasswordBox.xaml",
+        "ms-appx:///Neu.Uno/Styles/Neu.NumberBox.xaml",
+        "ms-appx:///Neu.Uno/Styles/Neu.ComboBox.xaml",
     ];
 
     private Uri? _colorOverrideSource;
