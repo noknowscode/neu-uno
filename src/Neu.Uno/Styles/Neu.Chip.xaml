@@ -1,0 +1,130 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:utu="using:Uno.Toolkit.UI">
+
+  <!--
+    Chip. A small RaisedSm pill that presses into an InsetSm one when checked,
+    with the label going amber - the second channel, since a chip is too small
+    for a marker to read.
+
+    Radius is half the 32 height, never NeuRadiusPill: 999 renders as an oval on
+    Skia (decisions.md).
+
+    Chip derives from ToggleButton, so it has ToggleButton's Checked states as
+    well as its own. The remove affordance is not templated: it needs a
+    PART_RemoveButton and a second hit target inside a 32px pill, which would
+    put a control inside a control at a size where neither reads. A removable
+    chip should be composed from a Neu Button instead.
+  -->
+
+  <Style x:Key="NeuChipStyle" TargetType="utu:Chip">
+    <Setter Property="Background" Value="{ThemeResource NeuSurfaceBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource NeuInkBrush}" />
+    <Setter Property="CornerRadius" Value="16" />
+    <Setter Property="Padding" Value="13,0" />
+    <Setter Property="Height" Value="32" />
+    <Setter Property="MinWidth" Value="0" />
+    <Setter Property="FontSize" Value="{ThemeResource NeuLabelFontSize}" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="UseSystemFocusVisuals" Value="False" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="utu:Chip">
+          <Grid x:Name="RootGrid">
+
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup x:Name="CommonStates">
+                <VisualState x:Name="Normal" />
+
+                <VisualState x:Name="PointerOver">
+                  <VisualState.Setters>
+                    <Setter Target="Surface.Background" Value="{ThemeResource NeuSurfaceHoverBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="Pressed">
+                  <VisualState.Setters>
+                    <Setter Target="Surface.Shadows" Value="{ThemeResource NeuInsetSm}" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="Disabled">
+                  <VisualState.Setters>
+                    <Setter Target="Surface.Shadows" Value="{ThemeResource NeuFlat}" />
+                    <Setter Target="ContentPresenter.Opacity" Value="{ThemeResource NeuInkDisabledOpacity}" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="Checked">
+                  <VisualState.Setters>
+                    <Setter Target="Surface.Shadows" Value="{ThemeResource NeuInsetSm}" />
+                    <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource NeuAccentBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="CheckedPointerOver">
+                  <VisualState.Setters>
+                    <Setter Target="Surface.Shadows" Value="{ThemeResource NeuInsetSm}" />
+                    <Setter Target="Surface.Background" Value="{ThemeResource NeuSurfaceHoverBrush}" />
+                    <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource NeuAccentBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="CheckedPressed">
+                  <VisualState.Setters>
+                    <Setter Target="Surface.Shadows" Value="{ThemeResource NeuInsetSm}" />
+                    <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource NeuAccentBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="CheckedDisabled">
+                  <VisualState.Setters>
+                    <Setter Target="Surface.Shadows" Value="{ThemeResource NeuFlat}" />
+                    <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource NeuAccentBrush}" />
+                    <Setter Target="ContentPresenter.Opacity" Value="{ThemeResource NeuInkDisabledOpacity}" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+
+              <VisualStateGroup x:Name="FocusStates">
+                <VisualState x:Name="Unfocused" />
+                <VisualState x:Name="PointerFocused" />
+                <VisualState x:Name="Focused">
+                  <VisualState.Setters>
+                    <Setter Target="FocusRing.Shadows" Value="{ThemeResource NeuFocusRing}" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+
+            <utu:ShadowContainer x:Name="FocusRing"
+                                 Background="{TemplateBinding Background}"
+                                 CornerRadius="{TemplateBinding CornerRadius}"
+                                 Shadows="{ThemeResource NeuFlat}">
+              <Grid CornerRadius="{TemplateBinding CornerRadius}" />
+            </utu:ShadowContainer>
+
+            <utu:ShadowContainer x:Name="Surface"
+                                 Background="{TemplateBinding Background}"
+                                 CornerRadius="{TemplateBinding CornerRadius}"
+                                 Shadows="{ThemeResource NeuRaisedSm}">
+              <Grid CornerRadius="{TemplateBinding CornerRadius}">
+                <ContentPresenter x:Name="ContentPresenter"
+                                  Content="{TemplateBinding Content}"
+                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                  Foreground="{TemplateBinding Foreground}"
+                                  Padding="{TemplateBinding Padding}"
+                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+              </Grid>
+            </utu:ShadowContainer>
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+</ResourceDictionary>

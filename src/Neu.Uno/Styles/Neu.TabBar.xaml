@@ -1,0 +1,151 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:utu="using:Uno.Toolkit.UI">
+
+  <!--
+    TabBar. The bar itself is an InsetMd groove - a channel cut into the slab -
+    and the selected tab is the one raised part sliding in it, RaisedSm with
+    amber ink. That inverts the usual Neu rule on purpose: everywhere else
+    selected means pressed in, but a tab that sinks into a groove it already sits
+    in has nowhere to go, so here the selection rises instead.
+
+    SelectionIndicatorContent is nulled because the Toolkit's own indicator draws
+    a second marker on top of the raised tab.
+
+    The items panel is left alone. TabBar requires its own TabBarListPanel and
+    overriding ItemsPanel with a plain StackPanel kills the app during startup -
+    no window is ever created, and because a desktop Uno app is windowed there is
+    no console output to say why. That panel equalises item widths across the
+    bar, so a Neu TabBar is sized by its container: give it a width rather than
+    expecting it to hug its tabs.
+
+    The bar keeps its own padding of 5 so a raised item never touches the groove
+    wall; at RaisedSm the shade reaches 3.
+  -->
+
+  <Style x:Key="NeuTabBarItemStyle" TargetType="utu:TabBarItem">
+    <Setter Property="Background" Value="{ThemeResource NeuSurfaceBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource NeuInkSecondaryBrush}" />
+    <Setter Property="CornerRadius" Value="{ThemeResource NeuRadiusSm}" />
+    <Setter Property="Padding" Value="21,0" />
+    <Setter Property="MinHeight" Value="34" />
+    <Setter Property="FontSize" Value="{ThemeResource NeuBodyFontSize}" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="UseSystemFocusVisuals" Value="False" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="utu:TabBarItem">
+          <Grid x:Name="LayoutRoot" Background="Transparent">
+
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup x:Name="CommonStates">
+                <VisualState x:Name="Normal" />
+
+                <VisualState x:Name="PointerOver">
+                  <VisualState.Setters>
+                    <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource NeuInkBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="Pressed">
+                  <VisualState.Setters>
+                    <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource NeuInkBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="Selected">
+                  <VisualState.Setters>
+                    <Setter Target="Surface.Shadows" Value="{ThemeResource NeuRaisedSm}" />
+                    <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource NeuAccentBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="PointerOverSelected">
+                  <VisualState.Setters>
+                    <Setter Target="Surface.Shadows" Value="{ThemeResource NeuRaisedSm}" />
+                    <Setter Target="Surface.Background" Value="{ThemeResource NeuSurfaceHoverBrush}" />
+                    <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource NeuAccentBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="PressedSelected">
+                  <VisualState.Setters>
+                    <Setter Target="Surface.Shadows" Value="{ThemeResource NeuRaisedSm}" />
+                    <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource NeuAccentBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="Disabled">
+                  <VisualState.Setters>
+                    <Setter Target="ContentPresenter.Opacity" Value="{ThemeResource NeuInkDisabledOpacity}" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+
+            <!-- Flat until selected: an unselected tab is part of the groove. -->
+            <utu:ShadowContainer x:Name="Surface"
+                                 Background="{TemplateBinding Background}"
+                                 CornerRadius="{TemplateBinding CornerRadius}"
+                                 Shadows="{ThemeResource NeuFlat}">
+              <Grid x:Name="ContentGrid" CornerRadius="{TemplateBinding CornerRadius}">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto" />
+                  <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Viewbox x:Name="IconBox"
+                         Grid.Column="0"
+                         Width="18"
+                         Height="18"
+                         Margin="13,0,0,0"
+                         VerticalAlignment="Center"
+                         Visibility="Collapsed">
+                  <ContentPresenter x:Name="Icon" Content="{TemplateBinding Icon}" />
+                </Viewbox>
+
+                <ContentPresenter x:Name="ContentPresenter"
+                                  Grid.Column="1"
+                                  Content="{TemplateBinding Content}"
+                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                  Foreground="{TemplateBinding Foreground}"
+                                  Padding="{TemplateBinding Padding}"
+                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+              </Grid>
+            </utu:ShadowContainer>
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="NeuTabBarStyle" TargetType="utu:TabBar">
+    <Setter Property="Background" Value="{ThemeResource NeuSurfaceBrush}" />
+    <Setter Property="CornerRadius" Value="{ThemeResource NeuRadiusMd}" />
+    <Setter Property="Padding" Value="5" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="SelectionIndicatorContent" Value="{x:Null}" />
+    <Setter Property="ItemContainerStyle" Value="{StaticResource NeuTabBarItemStyle}" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="utu:TabBar">
+          <Grid x:Name="TabBarGrid">
+            <utu:ShadowContainer x:Name="Groove"
+                                 Background="{TemplateBinding Background}"
+                                 CornerRadius="{TemplateBinding CornerRadius}"
+                                 Shadows="{ThemeResource NeuInsetMd}">
+              <Grid CornerRadius="{TemplateBinding CornerRadius}">
+                <Border x:Name="BackgroundBorder" Background="Transparent" />
+                <ItemsPresenter x:Name="TabBarItemsPresenter" Padding="{TemplateBinding Padding}" />
+              </Grid>
+            </utu:ShadowContainer>
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+</ResourceDictionary>

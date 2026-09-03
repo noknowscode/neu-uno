@@ -1,0 +1,161 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:utu="using:Uno.Toolkit.UI">
+
+  <!--
+    Card. The Toolkit ships no default template for Card outside its Material and
+    Cupertino theme packages - an unstyled Card measures to zero height - so this
+    is a template written from scratch rather than a restyle. Neu is a peer
+    theme, not a Material overlay, so it owes Card its own anatomy.
+
+    A card is the one large raised surface: RaisedSm, radius Lg, and no press
+    signature, because a plain Card is not interactive. NeuCardClickable adds the
+    press for the clickable variant.
+
+    Card is not a ContentControl - it has no Content property at all - so the
+    body is its SupportingContent slot. Header, sub-header and supporting content
+    stack at Fibonacci spacing. The avatar, media and icons slots are
+    deliberately not laid out; a neumorphic card is a slab, and the media slot in
+    particular would need a clipped image that the rounded-rect silhouette cannot
+    mask. Use CardContentControl below when arbitrary content is the point.
+  -->
+
+  <Style x:Key="NeuCardStyle" TargetType="utu:Card">
+    <Setter Property="Background" Value="{ThemeResource NeuSurfaceBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource NeuInkBrush}" />
+    <Setter Property="CornerRadius" Value="{ThemeResource NeuRadiusLg}" />
+    <Setter Property="Padding" Value="21" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="VerticalAlignment" Value="Top" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="utu:Card">
+          <Grid x:Name="Root">
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup x:Name="CommonStates">
+                <VisualState x:Name="Normal" />
+                <VisualState x:Name="Disabled">
+                  <VisualState.Setters>
+                    <Setter Target="Body.Opacity" Value="{ThemeResource NeuInkDisabledOpacity}" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+
+            <utu:ShadowContainer x:Name="Surface"
+                                 Background="{TemplateBinding Background}"
+                                 CornerRadius="{TemplateBinding CornerRadius}"
+                                 Shadows="{ThemeResource NeuRaisedSm}">
+              <Grid CornerRadius="{TemplateBinding CornerRadius}">
+                <StackPanel x:Name="Body"
+                            Padding="{TemplateBinding Padding}"
+                            Spacing="5">
+                  <ContentPresenter x:Name="HeaderPresenter"
+                                    Content="{TemplateBinding HeaderContent}"
+                                    ContentTemplate="{TemplateBinding HeaderContentTemplate}"
+                                    Foreground="{TemplateBinding Foreground}"
+                                    FontSize="{ThemeResource NeuTitleFontSize}"
+                                    FontWeight="SemiBold" 
+                                    TextWrapping="Wrap"
+                                    />
+
+                  <ContentPresenter x:Name="SubHeaderPresenter"
+                                    Content="{TemplateBinding SubHeaderContent}"
+                                    ContentTemplate="{TemplateBinding SubHeaderContentTemplate}"
+                                    Foreground="{ThemeResource NeuInkSecondaryBrush}"
+                                    FontSize="{ThemeResource NeuLabelFontSize}" 
+                                    TextWrapping="Wrap"
+                                    />
+
+                  <ContentPresenter x:Name="SupportingContentPresenter"
+                                    Content="{TemplateBinding SupportingContent}"
+                                    ContentTemplate="{TemplateBinding SupportingContentTemplate}"
+                                    Foreground="{TemplateBinding Foreground}"
+                                    FontSize="{ThemeResource NeuBodyFontSize}"
+                                    Margin="0,8,0,0" 
+                                    TextWrapping="Wrap"
+                                    />
+                </StackPanel>
+              </Grid>
+            </utu:ShadowContainer>
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- Clickable variant: the press signature, on a card-sized surface. -->
+  <Style x:Key="NeuCardClickableStyle" TargetType="utu:CardContentControl">
+    <Setter Property="Background" Value="{ThemeResource NeuSurfaceBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource NeuInkBrush}" />
+    <Setter Property="CornerRadius" Value="{ThemeResource NeuRadiusLg}" />
+    <Setter Property="Padding" Value="21" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="VerticalAlignment" Value="Top" />
+    <Setter Property="UseSystemFocusVisuals" Value="False" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="utu:CardContentControl">
+          <Grid x:Name="Root">
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup x:Name="CommonStates">
+                <VisualState x:Name="Normal" />
+
+                <VisualState x:Name="PointerOver">
+                  <VisualState.Setters>
+                    <Setter Target="Surface.Background" Value="{ThemeResource NeuSurfaceHoverBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="Pressed">
+                  <VisualState.Setters>
+                    <Setter Target="Surface.Shadows" Value="{ThemeResource NeuInsetSm}" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="Disabled">
+                  <VisualState.Setters>
+                    <Setter Target="ContentPresenter.Opacity" Value="{ThemeResource NeuInkDisabledOpacity}" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+
+              <VisualStateGroup x:Name="FocusStates">
+                <VisualState x:Name="Unfocused" />
+                <VisualState x:Name="PointerFocused" />
+                <VisualState x:Name="Focused">
+                  <VisualState.Setters>
+                    <Setter Target="FocusRing.Shadows" Value="{ThemeResource NeuFocusRing}" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+
+            <utu:ShadowContainer x:Name="FocusRing"
+                                 Background="{TemplateBinding Background}"
+                                 CornerRadius="{TemplateBinding CornerRadius}"
+                                 Shadows="{ThemeResource NeuFlat}">
+              <Grid CornerRadius="{TemplateBinding CornerRadius}" />
+            </utu:ShadowContainer>
+
+            <utu:ShadowContainer x:Name="Surface"
+                                 Background="{TemplateBinding Background}"
+                                 CornerRadius="{TemplateBinding CornerRadius}"
+                                 Shadows="{ThemeResource NeuRaisedSm}">
+              <Grid CornerRadius="{TemplateBinding CornerRadius}">
+                <ContentPresenter x:Name="ContentPresenter"
+                                  Content="{TemplateBinding Content}"
+                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                  Foreground="{TemplateBinding Foreground}"
+                                  Padding="{TemplateBinding Padding}"
+                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+              </Grid>
+            </utu:ShadowContainer>
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+</ResourceDictionary>

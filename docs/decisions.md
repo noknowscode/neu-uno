@@ -346,3 +346,99 @@ which needs a generated Lottie source; it rotates 180 degrees while open, which
 is the open state's second channel. ComboBox item selection is an amber leading
 bar rather than a filled row, so the drop-down does not spend the view's one
 amber fill.
+
+### Step 8 - ListViewItem, Card, Chip, TabBar, Expander, ContentDialog
+
+**Result: all six render in both themes.** The library builds for all four TFMs.
+Four of the six needed something the control demands that no documentation states,
+and three of those failed *silently* or *fatally* rather than visibly.
+
+**1. Overriding TabBar's ItemsPanel kills the app at startup.**
+TabBar requires its own `TabBarListPanel`; giving it a plain horizontal
+`StackPanel` - to stop it equalising item widths - throws during page
+construction. **No window is ever created, `MainWindowHandle` stays 0, and
+because a desktop Uno app is windowed there is no console output to say why** -
+running it through `dotnet` rather than the exe produces an empty log too. Found
+by bisecting the specimen section, not by reading an error. The panel is left
+alone; a Neu TabBar is therefore sized by its container rather than hugging its
+tabs, and the gallery gives it a width.
+*This contradicts a note carried in from another project saying a StackPanel
+ItemsPanel works on TabBar. It does not work here.*
+
+**2. Expander needs two things the control does not do for itself.**
+`ExpanderHeader` must have `IsChecked` bound two-way to `IsExpanded` in the
+template - Expander does not wire it - or the header never enters its Checked
+states and the chevron never turns. Separately, **a Neu-templated Expander never
+enters any expand visual state at all.** Proved by defaulting the body to Visible
+and watching the *collapsed* specimen show its content: if the states were
+firing, `Collapsed` would have hidden it. Two group names were tried first
+(`ExpandStates`, `ExpansionStates`) and neither fired, which is what forced the
+measurement instead of a third guess. The body binds to `IsExpanded` through a
+converter, so the reveal no longer depends on state names that are not part of
+the control's contract.
+
+**3. ContentDialog: BackgroundElement must be a Border.**
+It is resolved by name *and type* and dereferenced without a null check, so a
+`ShadowContainer` under that name throws `NullReferenceException` from inside
+`ContentDialog.OnApplyTemplate` before the dialog appears - and an `async void`
+handler swallows it, so the dialog simply never opens. Diagnosed by catching the
+exception and printing its first stack frame into the gallery, which named the
+method and line directly. The ShadowContainer now wraps a Border carrying that
+name.
+Also confirmed: **`ButtonsVisibilityStates` does not hide the button parts**, so
+a dialog with no secondary button renders an empty one. Each button binds its own
+`Visibility` to its own `*ButtonText` instead, which is self-maintaining.
+
+**4. Card has no default template and is not a ContentControl.**
+The Toolkit ships Card's template only in its Material and Cupertino packages; an
+unstyled Card measures to zero height. Neu is a peer theme, so Card's anatomy is
+written from scratch. It has no `Content` property at all - the body slot is
+`SupportingContent`, and `CardContentControl` is the type to use when arbitrary
+content is the point.
+
+**5. List rows need a gap, not just a shadow.**
+Rule 7 is offset < gap, and rows in a list are otherwise adjacent, so at RaisedSm
+touching rows print their shade on each other. Rows carry a 13 bottom margin -
+the smallest Fibonacci gap that clears an offset of 3 - which makes a Neu list
+inherently airier than a Fluent one.
+
+**Also:** TabBar inverts the selection rule on purpose. Everywhere else selected
+means pressed in, but the bar is already an InsetMd channel and a tab sitting in
+it has nowhere further to sink, so there the selected tab *rises*.
+`NeuScrim` is a new token, the only one with alpha and the only one outside the
+plaster palette. `NeuVisibilityConverter` is **internal** - it works around two
+controls, and is not part of the library's surface.
+
+### Verification 4 - the 200-row list
+
+**Measured on desktop; not measured on android or browserwasm.**
+
+| List | Scrolling, continuously driven |
+|---|---|
+| 200 stock rows | **58% of one core** |
+| 200 Neu rows (every row a ShadowContainer) | **114.6% of one core** |
+
+Debug build, 16-core machine, the sheet's two indeterminate specimens turned off
+for the run so their Forever storyboards could not dominate the number. Driven by
+a timer stepping the ScrollViewer, not by synthesized input, and not by
+`CompositionTarget.Rendering`, which would have been measuring itself.
+
+**So Neu rows cost about 2x stock rows to scroll.** That is a constant factor on
+the shared Skia render path rather than a cliff, and it is bounded by
+virtualization: a 200-row list never realises 200 ShadowContainers, only the
+handful in view. The documented fallbacks (drop the blur, or take rows to
+`NeuFlat` and let the amber bar carry selection) are not needed on desktop.
+
+**Not run, and why.** No Android device or emulator is attached (`adb devices` is
+empty), so the android leg could not run at all. The browserwasm leg was not
+attempted. Both remain open, and 2x on a 16-core desktop says nothing certain
+about a phone - **this verification is half done and should not be recorded as
+passed.**
+
+**Environment note:** the gallery's *android packaging* step now fails with a JVM
+`os::commit_memory` failure ("the paging file is too small"), not with anything
+from this step - the same head built in steps 5 through 7, the Neu.Uno library
+still builds for `net10.0-android`, and only the app's Java d8/r8 step is
+affected. A `Release` desktop build fails separately on
+`Microsoft.NETCore.App.Runtime.Mono.win-x64 10.0.1` not being restorable, which is
+why the perf numbers above are from a Debug build.

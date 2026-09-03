@@ -1,0 +1,111 @@
+<UserControl x:Class="Neu.Gallery.Views.SurfacesSection"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+             xmlns:utu="using:Uno.Toolkit.UI">
+
+  <!--
+    Step 8 specimens: ListViewItem, Card, Chip, TabBar, Expander.
+
+    Under NEU_GALLERY_PERF=<n> the list specimen is filled with n rows instead of
+    the handful, for the scroll test. Every row is a ShadowContainer, so this is
+    the measurement that decides whether the depth scale survives a long list.
+  -->
+  <StackPanel Spacing="34">
+
+    <StackPanel Spacing="13">
+      <TextBlock Style="{StaticResource NeuTitle}" Text="List" />
+      <TextBlock Style="{StaticResource NeuBody}"
+                 Foreground="{ThemeResource NeuInkSecondaryBrush}"
+                 Text="Rows are RaisedSm and sit 13 apart, because rule 7 is offset under gap and a RaisedSm shade reaches 3 past the edge. Selected presses in and takes an amber leading bar." />
+
+      <ListView x:Name="Rows"
+                Style="{StaticResource NeuListViewStyle}"
+                Width="288"
+                Height="233"
+                HorizontalAlignment="Left"
+                SelectedIndex="1" />
+      <TextBlock x:Name="RowsCaption" Style="{StaticResource NeuLabel}" Text="Rest and selected" />
+    </StackPanel>
+
+    <StackPanel Spacing="13">
+      <TextBlock Style="{StaticResource NeuTitle}" Text="Card" />
+      <TextBlock Style="{StaticResource NeuBody}"
+                 Foreground="{ThemeResource NeuInkSecondaryBrush}"
+                 Text="The Toolkit ships no default Card template outside its Material and Cupertino packages, so this one is written from scratch. Radius Lg, RaisedSm, no press unless it is clickable." />
+
+      <StackPanel Orientation="Horizontal" Spacing="34" HorizontalAlignment="Left">
+        <utu:Card Style="{StaticResource NeuCardStyle}"
+                  Width="233"
+                  HeaderContent="Plaster"
+                  SubHeaderContent="MATTE POLYMER"
+                  SupportingContent="One molded slab; depth carries the meaning." />
+        <StackPanel Spacing="8">
+          <utu:CardContentControl Style="{StaticResource NeuCardClickableStyle}" Width="233">
+            <TextBlock Style="{StaticResource NeuBody}" Text="Clickable card. Presses in." TextWrapping="Wrap" />
+          </utu:CardContentControl>
+          <TextBlock Style="{StaticResource NeuLabel}" Text="CardContentControl" />
+        </StackPanel>
+      </StackPanel>
+    </StackPanel>
+
+    <StackPanel Spacing="13">
+      <TextBlock Style="{StaticResource NeuTitle}" Text="Chip" />
+      <TextBlock Style="{StaticResource NeuBody}"
+                 Foreground="{ThemeResource NeuInkSecondaryBrush}"
+                 Text="A small raised pill that presses in when checked, with the label going amber. Radius is half the height, never the 999 pill token." />
+
+      <StackPanel Orientation="Horizontal" Spacing="13" HorizontalAlignment="Left">
+        <utu:Chip Style="{StaticResource NeuChipStyle}" Content="Raised" />
+        <utu:Chip Style="{StaticResource NeuChipStyle}" Content="Checked" IsChecked="True" />
+        <utu:Chip Style="{StaticResource NeuChipStyle}" Content="Disabled" IsEnabled="False" />
+      </StackPanel>
+    </StackPanel>
+
+    <StackPanel Spacing="13">
+      <TextBlock Style="{StaticResource NeuTitle}" Text="TabBar" />
+      <TextBlock Style="{StaticResource NeuBody}"
+                 Foreground="{ThemeResource NeuInkSecondaryBrush}"
+                 Text="The bar is an InsetMd channel and the selected tab is the raised part sliding in it. The one place selection rises instead of pressing in: a tab already sitting in a groove has nowhere further to sink." />
+
+      <utu:TabBar Style="{StaticResource NeuTabBarStyle}" SelectedIndex="0" Width="377">
+        <utu:TabBarItem Content="Depth" />
+        <utu:TabBarItem Content="Color" />
+        <utu:TabBarItem Content="Type" />
+      </utu:TabBar>
+    </StackPanel>
+
+    <StackPanel Spacing="13">
+      <TextBlock Style="{StaticResource NeuTitle}" Text="Dialog" />
+      <TextBlock Style="{StaticResource NeuBody}"
+                 Foreground="{ThemeResource NeuInkSecondaryBrush}"
+                 Text="RaisedLg on a dimmed canvas: the only surface that floats above the slab instead of being cut from it, and the only use of the largest depth. The primary button takes the view's one amber fill." />
+
+      <Button x:Name="ShowDialog"
+              Style="{StaticResource NeuButtonStyle}"
+              Content="Show dialog"
+              Click="OnShowDialog" />
+    </StackPanel>
+
+    <StackPanel Spacing="13">
+      <TextBlock Style="{StaticResource NeuTitle}" Text="Expander" />
+      <TextBlock Style="{StaticResource NeuBody}"
+                 Foreground="{ThemeResource NeuInkSecondaryBrush}"
+                 Text="The header is a raised slab that presses in when open; the body it reveals is a well cut below it." />
+
+      <StackPanel Orientation="Horizontal" Spacing="34" HorizontalAlignment="Left">
+        <StackPanel Spacing="8">
+          <muxc:Expander Style="{StaticResource NeuExpanderStyle}" Header="Closed" Content="Body" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="Collapsed" />
+        </StackPanel>
+        <StackPanel Spacing="8">
+          <muxc:Expander Style="{StaticResource NeuExpanderStyle}" Header="Open" IsExpanded="True">
+            <TextBlock Style="{StaticResource NeuBody}" Text="A hole opened in the slab." TextWrapping="Wrap" />
+          </muxc:Expander>
+          <TextBlock Style="{StaticResource NeuLabel}" Text="Expanded" />
+        </StackPanel>
+      </StackPanel>
+    </StackPanel>
+
+  </StackPanel>
+</UserControl>

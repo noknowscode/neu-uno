@@ -1,0 +1,168 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:neu="using:Neu.Uno"
+                    xmlns:utu="using:Uno.Toolkit.UI">
+
+  <!--
+    ContentDialog. RaisedLg on a dimmed canvas - the only place in the library
+    that uses the largest depth, and the only surface that floats above the slab
+    rather than being cut from it.
+
+    Part names are contractual: Container, LayoutRoot, BackgroundElement,
+    DialogSpace, ContentScrollViewer, Title, Content, CommandSpace,
+    PrimaryButton, SecondaryButton and CloseButton are all resolved by name, and
+    BackgroundElement by type as well - it has to be a Border.
+
+    There is no ButtonsVisibilityStates group here on purpose. It exists in the
+    stock template but does not actually hide the button parts, so a dialog with
+    no secondary button renders an empty one in the command row. Each button
+    binds its own Visibility to its own *ButtonText instead, which is both
+    correct and self-maintaining.
+
+    An implicit Style never reaches a ContentDialog subclass - implicit styles
+    match on exact type - so an app whose dialogs are written as
+    `sealed partial class FooDialog : ContentDialog` has to assign this style
+    explicitly at construction. That is why it is keyed rather than left to the
+    implicit dictionary in step 9.
+
+    The buttons are Neu Buttons in the command row, with the primary one taking
+    the amber fill: a dialog is exactly the case the "one amber fill per view"
+    rule is written for.
+  -->
+
+  <neu:NeuVisibilityConverter x:Key="NeuDialogButtonVisibility" />
+
+  <Style x:Key="NeuContentDialogStyle" TargetType="ContentDialog">
+    <Setter Property="Background" Value="{ThemeResource NeuSurfaceBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource NeuInkBrush}" />
+    <Setter Property="CornerRadius" Value="{ThemeResource NeuRadiusLg}" />
+    <Setter Property="HorizontalAlignment" Value="Center" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="IsTabStop" Value="False" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ContentDialog">
+          <Border x:Name="Container">
+            <Grid x:Name="LayoutRoot">
+              <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup x:Name="DialogShowingStates">
+                  <VisualState x:Name="DialogHidden" />
+                  <VisualState x:Name="DialogShowing">
+                    <VisualState.Setters>
+                      <Setter Target="LayoutRoot.Visibility" Value="Visible" />
+                    </VisualState.Setters>
+                  </VisualState>
+                  <VisualState x:Name="DialogShowingWithoutSmokeLayer">
+                    <VisualState.Setters>
+                      <Setter Target="LayoutRoot.Visibility" Value="Visible" />
+                      <Setter Target="SmokeLayer.Visibility" Value="Collapsed" />
+                    </VisualState.Setters>
+                  </VisualState>
+                </VisualStateGroup>
+
+              </VisualStateManager.VisualStateGroups>
+
+              <!-- The dimmed canvas the dialog floats over. -->
+              <Rectangle x:Name="SmokeLayer" Fill="{ThemeResource NeuScrimBrush}" />
+
+              <utu:ShadowContainer x:Name="DialogSurface"
+                                   MinWidth="288"
+                                   MaxWidth="466"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Background="{TemplateBinding Background}"
+                                   CornerRadius="{TemplateBinding CornerRadius}"
+                                   Shadows="{ThemeResource NeuRaisedLg}">
+                <!--
+                  BackgroundElement must be a Border. ContentDialog resolves it
+                  by name and type in OnApplyTemplate and dereferences it without
+                  a null check, so putting a ShadowContainer under that name
+                  throws a NullReferenceException from inside the control before
+                  the dialog ever appears. It carries no Background of its own -
+                  the ShadowContainer around it does (rule 1).
+                -->
+                <Border x:Name="BackgroundElement" CornerRadius="{TemplateBinding CornerRadius}">
+                <Grid x:Name="DialogSpace" CornerRadius="{TemplateBinding CornerRadius}">
+                  <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                  </Grid.RowDefinitions>
+
+                  <ContentControl x:Name="Title"
+                                  Grid.Row="0"
+                                  Content="{TemplateBinding Title}"
+                                  ContentTemplate="{TemplateBinding TitleTemplate}"
+                                  Foreground="{TemplateBinding Foreground}"
+                                  FontSize="{ThemeResource NeuTitleFontSize}"
+                                  FontWeight="SemiBold"
+                                  Margin="34,34,34,0"
+                                  IsTabStop="False"
+                                  HorizontalContentAlignment="Stretch" />
+
+                  <ScrollViewer x:Name="ContentScrollViewer"
+                                Grid.Row="1"
+                                Margin="34,13,34,0"
+                                HorizontalScrollMode="Disabled"
+                                VerticalScrollMode="Auto"
+                                VerticalScrollBarVisibility="Auto"
+                                ZoomMode="Disabled"
+                                IsTabStop="False">
+                    <ContentPresenter x:Name="Content"
+                                      Content="{TemplateBinding Content}"
+                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                      Foreground="{TemplateBinding Foreground}"
+                                      FontSize="{ThemeResource NeuBodyFontSize}"
+                                      TextWrapping="Wrap"
+                                      HorizontalAlignment="Stretch" />
+                  </ScrollViewer>
+
+                  <Grid x:Name="CommandSpace"
+                        Grid.Row="2"
+                        Margin="34,34,34,34"
+                        ColumnSpacing="13"
+                        HorizontalAlignment="Right">
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition Width="Auto" />
+                      <ColumnDefinition Width="Auto" />
+                      <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Button x:Name="CloseButton"
+                            Grid.Column="0"
+                            Content="{TemplateBinding CloseButtonText}"
+                            Visibility="{Binding CloseButtonText, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource NeuDialogButtonVisibility}}"
+                            Command="{TemplateBinding CloseButtonCommand}"
+                            CommandParameter="{TemplateBinding CloseButtonCommandParameter}"
+                            Style="{ThemeResource NeuButtonStyle}" />
+
+                    <Button x:Name="SecondaryButton"
+                            Grid.Column="1"
+                            Content="{TemplateBinding SecondaryButtonText}"
+                            Visibility="{Binding SecondaryButtonText, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource NeuDialogButtonVisibility}}"
+                            Command="{TemplateBinding SecondaryButtonCommand}"
+                            CommandParameter="{TemplateBinding SecondaryButtonCommandParameter}"
+                            IsEnabled="{TemplateBinding IsSecondaryButtonEnabled}"
+                            Style="{ThemeResource NeuButtonStyle}" />
+
+                    <!-- The dialog's one amber fill. -->
+                    <Button x:Name="PrimaryButton"
+                            Grid.Column="2"
+                            Content="{TemplateBinding PrimaryButtonText}"
+                            Visibility="{Binding PrimaryButtonText, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource NeuDialogButtonVisibility}}"
+                            Command="{TemplateBinding PrimaryButtonCommand}"
+                            CommandParameter="{TemplateBinding PrimaryButtonCommandParameter}"
+                            IsEnabled="{TemplateBinding IsPrimaryButtonEnabled}"
+                            Style="{ThemeResource NeuAccentButtonStyle}" />
+                  </Grid>
+                </Grid>
+                </Border>
+              </utu:ShadowContainer>
+            </Grid>
+          </Border>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+</ResourceDictionary>

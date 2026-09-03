@@ -65,7 +65,7 @@
           <TextBlock Style="{StaticResource NeuLabel}" Text="Determinate 40" />
         </StackPanel>
         <StackPanel Spacing="8">
-          <ProgressBar Style="{StaticResource NeuProgressBarStyle}" Width="233" IsIndeterminate="True" />
+          <ProgressBar x:Name="BusyBar" Style="{StaticResource NeuProgressBarStyle}" Width="233" IsIndeterminate="True" />
           <TextBlock Style="{StaticResource NeuLabel}" Text="Indeterminate" />
         </StackPanel>
         <StackPanel Spacing="8">
@@ -76,7 +76,7 @@
 
       <StackPanel Orientation="Horizontal" Spacing="34" HorizontalAlignment="Left">
         <StackPanel Spacing="8">
-          <ProgressRing Style="{StaticResource NeuProgressRingStyle}" IsActive="True" />
+          <ProgressRing x:Name="BusyRing" Style="{StaticResource NeuProgressRingStyle}" IsActive="True" />
           <TextBlock Style="{StaticResource NeuLabel}" Text="Indeterminate" />
         </StackPanel>
         <StackPanel Spacing="8">

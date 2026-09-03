@@ -1,0 +1,228 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+                    xmlns:neu="using:Neu.Uno"
+                    xmlns:utu="using:Uno.Toolkit.UI">
+
+  <!--
+    Expander. A RaisedSm slab whose header presses in when open, revealing a
+    NeuWell-style InsetSm body underneath - the content is a hole opened in the
+    slab, which is the same story the inputs tell.
+
+    ExpanderHeader has to be a ToggleButton: Expander binds IsChecked to
+    IsExpanded two-way and drives the whole control from it. ExpanderContent and
+    ExpanderContentClip are resolved by name for the reveal, so both stay.
+
+    The chevron is a Path rotated by the expand states, not the stock
+    AnimatedIcon, which needs a generated Lottie source - the same substitution
+    made for ComboBox.
+  -->
+
+  <neu:NeuVisibilityConverter x:Key="NeuExpanderBodyVisibility" />
+
+  <Style x:Key="NeuExpanderHeaderStyle" TargetType="ToggleButton">
+    <Setter Property="Background" Value="{ThemeResource NeuSurfaceBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource NeuInkBrush}" />
+    <Setter Property="CornerRadius" Value="{ThemeResource NeuRadiusMd}" />
+    <Setter Property="Padding" Value="21,0" />
+    <Setter Property="MinHeight" Value="{ThemeResource NeuTouchTargetMin}" />
+    <Setter Property="FontSize" Value="{ThemeResource NeuBodyFontSize}" />
+    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="UseSystemFocusVisuals" Value="False" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ToggleButton">
+          <Grid x:Name="ToggleButtonGrid">
+
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup x:Name="CommonStates">
+                <VisualState x:Name="Normal" />
+
+                <VisualState x:Name="PointerOver">
+                  <VisualState.Setters>
+                    <Setter Target="Surface.Background" Value="{ThemeResource NeuSurfaceHoverBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="Pressed">
+                  <VisualState.Setters>
+                    <Setter Target="Surface.Shadows" Value="{ThemeResource NeuInsetSm}" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="Disabled">
+                  <VisualState.Setters>
+                    <Setter Target="Surface.Shadows" Value="{ThemeResource NeuFlat}" />
+                    <Setter Target="ContentPresenter.Opacity" Value="{ThemeResource NeuInkDisabledOpacity}" />
+                    <Setter Target="Chevron.Opacity" Value="{ThemeResource NeuInkDisabledOpacity}" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <!-- Open: the header is pressed in and the chevron points up. -->
+                <VisualState x:Name="Checked">
+                  <VisualState.Setters>
+                    <Setter Target="Surface.Shadows" Value="{ThemeResource NeuInsetSm}" />
+                    <Setter Target="ChevronRotate.Angle" Value="180" />
+                    <Setter Target="Chevron.Stroke" Value="{ThemeResource NeuAccentBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="CheckedPointerOver">
+                  <VisualState.Setters>
+                    <Setter Target="Surface.Shadows" Value="{ThemeResource NeuInsetSm}" />
+                    <Setter Target="Surface.Background" Value="{ThemeResource NeuSurfaceHoverBrush}" />
+                    <Setter Target="ChevronRotate.Angle" Value="180" />
+                    <Setter Target="Chevron.Stroke" Value="{ThemeResource NeuAccentBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="CheckedPressed">
+                  <VisualState.Setters>
+                    <Setter Target="Surface.Shadows" Value="{ThemeResource NeuInsetSm}" />
+                    <Setter Target="ChevronRotate.Angle" Value="180" />
+                    <Setter Target="Chevron.Stroke" Value="{ThemeResource NeuAccentBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="CheckedDisabled">
+                  <VisualState.Setters>
+                    <Setter Target="Surface.Shadows" Value="{ThemeResource NeuFlat}" />
+                    <Setter Target="ChevronRotate.Angle" Value="180" />
+                    <Setter Target="ContentPresenter.Opacity" Value="{ThemeResource NeuInkDisabledOpacity}" />
+                    <Setter Target="Chevron.Opacity" Value="{ThemeResource NeuInkDisabledOpacity}" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+
+              <VisualStateGroup x:Name="FocusStates">
+                <VisualState x:Name="Unfocused" />
+                <VisualState x:Name="PointerFocused" />
+                <VisualState x:Name="Focused">
+                  <VisualState.Setters>
+                    <Setter Target="FocusRing.Shadows" Value="{ThemeResource NeuFocusRing}" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+
+            <utu:ShadowContainer x:Name="FocusRing"
+                                 Background="{TemplateBinding Background}"
+                                 CornerRadius="{TemplateBinding CornerRadius}"
+                                 Shadows="{ThemeResource NeuFlat}">
+              <Grid CornerRadius="{TemplateBinding CornerRadius}" />
+            </utu:ShadowContainer>
+
+            <utu:ShadowContainer x:Name="Surface"
+                                 Background="{TemplateBinding Background}"
+                                 CornerRadius="{TemplateBinding CornerRadius}"
+                                 Shadows="{ThemeResource NeuRaisedSm}">
+              <Grid CornerRadius="{TemplateBinding CornerRadius}">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <ContentPresenter x:Name="ContentPresenter"
+                                  Grid.Column="0"
+                                  Content="{TemplateBinding Content}"
+                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                  Foreground="{TemplateBinding Foreground}"
+                                  Padding="{TemplateBinding Padding}"
+                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+
+                <Path x:Name="Chevron"
+                      Grid.Column="1"
+                      Data="M0,0 L5,5 L10,0"
+                      Stroke="{ThemeResource NeuInkSecondaryBrush}"
+                      StrokeThickness="1.5"
+                      StrokeStartLineCap="Round"
+                      StrokeEndLineCap="Round"
+                      StrokeLineJoin="Round"
+                      Margin="0,0,21,0"
+                      RenderTransformOrigin="0.5,0.5"
+                      VerticalAlignment="Center"
+                      IsHitTestVisible="False">
+                  <Path.RenderTransform>
+                    <RotateTransform x:Name="ChevronRotate" />
+                  </Path.RenderTransform>
+                </Path>
+              </Grid>
+            </utu:ShadowContainer>
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="NeuExpanderStyle" TargetType="muxc:Expander">
+    <Setter Property="Background" Value="{ThemeResource NeuSurfaceBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource NeuInkBrush}" />
+    <Setter Property="CornerRadius" Value="{ThemeResource NeuRadiusMd}" />
+    <Setter Property="Padding" Value="21" />
+    <Setter Property="MinWidth" Value="233" />
+    <Setter Property="FontSize" Value="{ThemeResource NeuBodyFontSize}" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="VerticalAlignment" Value="Top" />
+    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="muxc:Expander">
+          <Grid x:Name="Root">
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+
+            <!--
+              IsChecked is bound two-way to IsExpanded here, not wired by the
+              control: Expander leaves that to the template. Without it the
+              header never enters its Checked states, so the chevron does not
+              turn and the header does not press in - and the body still opens,
+              which makes the omission look like a styling bug rather than a
+              missing binding.
+            -->
+            <ToggleButton x:Name="ExpanderHeader"
+                          Grid.Row="0"
+                          Content="{TemplateBinding Header}"
+                          ContentTemplate="{TemplateBinding HeaderTemplate}"
+                          IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                          IsEnabled="{Binding IsEnabled, RelativeSource={RelativeSource TemplatedParent}}"
+                          Style="{StaticResource NeuExpanderHeaderStyle}"
+                          HorizontalAlignment="Stretch"
+                          AutomationProperties.AccessibilityView="Raw" />
+
+            <!--
+              Bound, not state-driven. Expander's reveal normally comes from
+              visual states in its own default template, but a Neu-templated
+              Expander never enters them - proved by defaulting this to Visible
+              and watching a collapsed Expander show its body anyway. Binding to
+              IsExpanded stops the reveal depending on state names that are not
+              part of the control's contract.
+            -->
+            <Border x:Name="ExpanderContentClip"
+                    Grid.Row="1"
+                    Margin="0,13,0,0"
+                    Visibility="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource NeuExpanderBodyVisibility}}">
+              <utu:ShadowContainer x:Name="BodyWell"
+                                   Background="{TemplateBinding Background}"
+                                   CornerRadius="{TemplateBinding CornerRadius}"
+                                   Shadows="{ThemeResource NeuInsetSm}">
+                <Border x:Name="ExpanderContent" CornerRadius="{TemplateBinding CornerRadius}">
+                  <ContentPresenter Content="{TemplateBinding Content}"
+                                    ContentTemplate="{TemplateBinding ContentTemplate}"
+                                    Foreground="{TemplateBinding Foreground}"
+                                    Padding="{TemplateBinding Padding}"
+                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" />
+                </Border>
+              </utu:ShadowContainer>
+            </Border>
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+</ResourceDictionary>

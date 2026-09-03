@@ -31,7 +31,7 @@
                          Style="{StaticResource NeuDisplay}"
                          Text="Neu &#183; Specimens" />
               <TextBlock Style="{StaticResource NeuLabel}"
-                         Text="TOKENS &#183; DEPTH &#183; PRIMITIVES &#183; BUTTONS &#183; RANGE &#183; INPUTS" />
+                         Text="TOKENS &#183; DEPTH &#183; PRIMITIVES &#183; BUTTONS &#183; RANGE &#183; INPUTS &#183; SURFACES" />
             </StackPanel>
 
             <Button Grid.Column="1"
@@ -61,6 +61,10 @@
           <neu:NeuGroove />
 
           <views:InputsSection />
+
+          <neu:NeuGroove />
+
+          <views:SurfacesSection />
 
         </StackPanel>
       </Grid>
