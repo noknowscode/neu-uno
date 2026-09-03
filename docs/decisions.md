@@ -548,3 +548,51 @@ proof every key was restated) and the five bare controls, light and dark.
 **Not verified:** that the OS high-contrast setting turns any of this on - it
 does not, by decision (D11). And nothing here was run on android or
 browserwasm, which have been open since verification 4.
+
+### Step 10 - README, override guide, gallery captions
+
+**Result: the plan in `docs/SPEC.md` is complete.** `README.md`, `docs/overrides.md`
+and three captured images; three missing gallery captions filled; one real defect
+found in `tools/contrast-check.ps1` while writing the guide.
+
+**1. Writing the override guide found a bug in the contrast tool.** The guide
+documents `-TokensPath`, so an app can check the palette it actually ships rather
+than the library's. Testing that claim rather than asserting it turned up the
+failure mode: a token file restating only a couple of keys builds **no floored
+pair at all**, and the script printed an empty table, said "All enforced contrast
+floors met" and exited 0. A partial override file therefore got a green light
+that meant nothing - the worst possible answer from an accessibility check, and
+invisible unless you counted the rows. The script now tracks how many enforced
+pairs it measured, refuses to report a pass on zero, and prints the count on
+success (`10 pair(s) checked` is the full set).
+
+**2. The guide's own example failed the check it recommends.** The first draft
+overrode `NeuAccent` to a deep green `#3F7A6B` and left `NeuOnAccent` alone -
+exactly the trap the same page warns about, three paragraphs later. It measures
+3.31:1. Swapping `NeuOnAccent` to the light ink only reaches 4.06:1, because a
+mid-tone accent is too dark for dark ink and too light for light ink at once.
+The example is now `#6FAE99` / `#85C0AB`, which clears both themes with the
+shipped dark ink and matches the amber's own logic - a light fill carrying dark
+ink. **Verified by running the tool on the example, not by reading it.** The
+constraint this exposes is now stated in the guide: overriding `NeuAccent` is
+more constrained than it looks, and the middle of the lightness range fails
+twice.
+
+**3. Three specimens had no caption.** The Card (whose sibling
+`CardContentControl` had one), the Chip row and the TabBar. The sheet's rule is
+one caption per specimen or per row group - the list specimen already carried a
+single caption for a multi-state row - so the Chip and TabBar rows take one each
+rather than one per item, which would have printed "Raised" directly under a chip
+that says "Raised".
+
+**No empty-state caption was added.** The Design Brief specifies "No sample yet"
+in secondary ink for an empty specimen slot; all eighteen controls are
+implemented, so there is no empty slot to caption and inventing one would be
+theatre.
+
+**Images.** `docs/images/neu-{light,dark,high-contrast}.png` are real captures of
+the running desktop head at scroll 2100 with `NEU_GALLERY_STATE=1`, so the press
+signature is visible in the hero shot. `NEU_GALLERY_FOCUS` is deliberately *not*
+set for them: it rewrites the caption under the focused specimen to
+`Focus()=True state=Keyboard`, which is verification instrumentation and has no
+business in a README.

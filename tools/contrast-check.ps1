@@ -114,6 +114,7 @@ $floors = @{
 # --- Report -------------------------------------------------------------------
 
 $failures = @()
+$enforced = 0
 
 foreach ($themeName in $reported) {
     $colors = $themes[$themeName]
@@ -145,11 +146,13 @@ foreach ($themeName in $reported) {
                 $floorText = ('{0:0.0}' -f $floor)
                 $result = 'PASS'
                 $color = 'Green'
+                $enforced++
             }
             else {
                 $floorText = ('{0:0.0}' -f $floor)
                 $result = 'FAIL'
                 $color = 'Red'
+                $enforced++
                 $failures += [pscustomobject] @{
                     Theme = $themeName; Ink = $fg; Surface = $bg
                     Ratio = $ratio; Floor = $floor
@@ -163,8 +166,19 @@ foreach ($themeName in $reported) {
 }
 
 Write-Host ''
+
+# A token file that restates only a few keys builds no pairs at all, and without
+# this it would print an empty table and report a pass. Silence is not a pass.
+if ($enforced -eq 0) {
+    Write-Host 'No enforced pair could be measured - nothing was checked.' -ForegroundColor Red
+    Write-Host "  $TokensPath defines no theme dictionary holding both halves of a floored pair." -ForegroundColor Red
+    Write-Host '  An override file has to restate the full ink and surface set to be checkable;' -ForegroundColor Red
+    Write-Host '  the simplest way is to copy Tokens.Colors.xaml and edit it.' -ForegroundColor Red
+    exit 1
+}
+
 if ($failures.Count -eq 0) {
-    Write-Host 'All enforced contrast floors met.' -ForegroundColor Green
+    Write-Host "All enforced contrast floors met ($enforced pair(s) checked)." -ForegroundColor Green
     exit 0
 }
 

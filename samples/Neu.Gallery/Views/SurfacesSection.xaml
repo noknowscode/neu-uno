@@ -35,11 +35,14 @@
                  Text="The Toolkit ships no default Card template outside its Material and Cupertino packages, so this one is written from scratch. Radius Lg, RaisedSm, no press unless it is clickable." />
 
       <StackPanel Orientation="Horizontal" Spacing="34" HorizontalAlignment="Left">
-        <utu:Card Style="{StaticResource NeuCardStyle}"
-                  Width="233"
-                  HeaderContent="Plaster"
-                  SubHeaderContent="MATTE POLYMER"
-                  SupportingContent="One molded slab; depth carries the meaning." />
+        <StackPanel Spacing="8">
+          <utu:Card Style="{StaticResource NeuCardStyle}"
+                    Width="233"
+                    HeaderContent="Plaster"
+                    SubHeaderContent="MATTE POLYMER"
+                    SupportingContent="One molded slab; depth carries the meaning." />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="Card" />
+        </StackPanel>
         <StackPanel Spacing="8">
           <utu:CardContentControl Style="{StaticResource NeuCardClickableStyle}" Width="233">
             <TextBlock Style="{StaticResource NeuBody}" Text="Clickable card. Presses in." TextWrapping="Wrap" />
@@ -60,6 +63,7 @@
         <utu:Chip Style="{StaticResource NeuChipStyle}" Content="Checked" IsChecked="True" />
         <utu:Chip Style="{StaticResource NeuChipStyle}" Content="Disabled" IsEnabled="False" />
       </StackPanel>
+      <TextBlock Style="{StaticResource NeuLabel}" Text="Raised, checked, disabled" />
     </StackPanel>
 
     <StackPanel Spacing="13">
@@ -73,6 +77,7 @@
         <utu:TabBarItem Content="Color" />
         <utu:TabBarItem Content="Type" />
       </utu:TabBar>
+      <TextBlock Style="{StaticResource NeuLabel}" Text="Selected, rest, rest" />
     </StackPanel>
 
     <StackPanel Spacing="13">
