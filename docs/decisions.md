@@ -690,3 +690,71 @@ minimised, none of which the harness does. The seed hook now sets every input it
 reads and prints its own percentage into the caption, so a disturbed run is
 obvious in the image rather than being mistaken for a rendering bug. It was
 mistaken for one once, and cost a wrong reading of the ring fix.
+
+### Verification 7 - coverage audit and colour stress
+
+**Two questions asked directly: are all the Toolkit and stock WinUI components
+covered, and have different colours been tested. Measured rather than
+estimated.**
+
+**Coverage, by enumeration.** `MetadataLoadContext` over the gallery's own build
+output, listing every non-abstract public class deriving from
+`Microsoft.UI.Xaml.Controls.Control`, cross-referenced against every `TargetType`
+in `src/Neu.Uno/Styles`:
+
+| Surface | Types | Neu covers |
+|---|---|---|
+| `Microsoft.UI.Xaml.Controls` (Uno.UI.dll) | 113 | 16 |
+| `Uno.Toolkit.UI` (Uno.Toolkit.WinUI.dll) | 17 | 5 |
+
+**The answer is no, and it was never going to be yes** - a theme that covered all
+113 would be a much larger project than this one. But the number was not written
+down anywhere, and `UseImplicitStyles="True"` makes the gap silent: an uncovered
+control renders Fluent in the same view with no indication that it was not part
+of the theme. The README now carries the counts and the list of uncovered
+controls an app actually hits.
+
+Of the Toolkit's twelve uncovered types, most need nothing: `SafeArea`,
+`ResponsiveView`, `ExtendedSplashScreen` and `ZoomContentControl` have no chrome,
+and three are internal presenters. **`ChipGroup` needs nothing either** -
+confirmed on the probe page, its children are `Chip`s and pick up the Neu style
+through the implicit dictionary. The real gaps are `NavigationBar`,
+`DrawerControl`, `LoadingView` and `Divider`.
+
+**The sharpest finding is colour, not shape.** Photographed on a probe page that
+puts covered and uncovered controls in one view: `HyperlinkButton`,
+`RatingControl`, `InfoBadge` and `InfoBar` all paint themselves with the **system
+accent, which is blue** - a hue that appears nowhere in the Neu palette, beside
+Neu's amber, in the same row. `ListBox` fails differently: no chrome at all next
+to a Neu `ListView`, reading as unfinished rather than as a different theme.
+Shape mismatches (Fluent's square bordered boxes beside Neu's soft extrusions)
+are obvious but at least legible; the blue is the thing that looks like a bug.
+
+**Colour, before this pass: barely tested.** Light and dark shipped palettes, and
+one accent swap in the consumer app. Nothing had exercised a change to the
+surface, which is the risky one.
+
+**Colour, now: the surface and the shadows are one edit, and the library does not
+enforce it.** `NeuShadowDark` / `NeuShadowLight` are independent tokens, so a
+consumer who restates `NeuSurface` alone keeps the old palette's shadow hue.
+Measured on a cool slate re-skin, sampling the rendered window:
+
+| Palette | Canvas R-B | Darkest shade R-B |
+|---|---|---|
+| Shipped plaster | +13 (warm) | +16 (warm) |
+| Slate, surface only | -13 (cool) | **+1 (neutral)** |
+| Slate, surface and shadows | -13 (cool) | -17 (cool) |
+
+The shipped palette keeps shade and surface on the same side of neutral; the
+naive override does not, and the shade lands as grey dirt at every control edge.
+It still renders and nothing warns. Written up in `docs/overrides.md` as a
+five-key minimum for a surface change.
+
+**Also verified in this pass:** `ColorOverrideSource` assigned from code (not
+just from XAML) applies correctly, which is what let one build be photographed
+under three palettes.
+
+**Not tested:** a surface deliberately different from the canvas - the Design
+Brief's premise is that they are one colour, and nothing checks that a consumer
+kept it. A saturated or very dark surface in light theme. And the uncovered
+controls above have not been styled, only enumerated and photographed.

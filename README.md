@@ -143,6 +143,44 @@ Neu-anatomy controls too. Nothing reads the OS high-contrast setting - merging i
 your call. Details and the three deviations it makes are in D11 of
 [`docs/decisions.md`](docs/decisions.md).
 
+## What it does not cover
+
+Neu styles 18 controls. Everything else renders stock Fluent, and with
+`UseImplicitStyles="True"` that happens silently in the same view - measured
+against the running assemblies, the theme covers **16 of the 113 `Control`
+subclasses in `Microsoft.UI.Xaml.Controls`** and **5 of the 17 in
+`Uno.Toolkit.UI`**.
+
+Most of the remainder are types no theme needs to style - `Page`, `UserControl`,
+`Frame`, `ItemsControl`, presenters, `WebView2`, `MapControl`, and Toolkit
+layout helpers like `SafeArea` and `ResponsiveView`, which have no chrome of
+their own. `ChipGroup` needs nothing either: its children are `Chip`s and they
+pick up the Neu style.
+
+What is left is a real list, and these are the ones an app hits first:
+
+| | |
+|---|---|
+| Buttons | `HyperlinkButton`, `DropDownButton`, `SplitButton`, `AppBarButton`, `AppBarToggleButton` |
+| Inputs | `AutoSuggestBox`, `RichEditBox`, `CalendarDatePicker`, `DatePicker`, `TimePicker`, `ColorPicker` |
+| Collections | `GridView`, `ListBox`, `TreeView`, `FlipView`, `ItemsView`, `ItemContainer` |
+| Navigation | `NavigationView`, `TabView`, `Pivot`, `BreadcrumbBar`, `SelectorBar`, `PipsPager`, `SplitView` |
+| Menus and overlays | `MenuFlyoutPresenter`, `MenuFlyoutItem`, `FlyoutPresenter`, `CommandBar`, `MenuBar`, `ToolTip`, `TeachingTip` |
+| Status | `InfoBar`, `InfoBadge`, `RatingControl`, `PersonPicture` |
+| Toolkit | `NavigationBar`, `DrawerControl`, `LoadingView`, `Divider`, `ZoomContentControl` |
+| Chrome | `ScrollBar` - visible in every scrolling view |
+
+**The sharpest consequence is colour, not shape.** Several of these paint
+themselves with the system accent, which is blue and appears nowhere in the Neu
+palette: a `HyperlinkButton`, a `RatingControl`'s stars, an `InfoBadge` and an
+`InfoBar`'s icon all render blue next to Neu's amber. A `ListBox` is worse in a
+different way - it has no chrome at all beside a Neu `ListView` and reads as
+unfinished.
+
+`samples/Neu.Gallery` covers what Neu styles. To see the seam, the consumer app
+in the sibling `steep` repo has a coverage probe page (`STEEP_PAGE=coverage`)
+that puts covered and uncovered controls in the same view.
+
 ## Known limits
 
 - **Rounded rectangles and pills only.** `ShadowContainer` mimics its content by

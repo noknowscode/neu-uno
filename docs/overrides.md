@@ -58,6 +58,32 @@ leave out keeps the Neu value:
 </ResourceDictionary>
 ```
 
+### Changing the surface means changing the shadows
+
+The depth illusion is the surface lit from the top left, and `NeuShadowDark` /
+`NeuShadowLight` are **independent tokens** - they do not derive from
+`NeuSurface`. Restate the surface alone and the shadows keep the hue of the
+palette you left behind.
+
+Measured on a cool slate re-skin (`#DDE3EA`), sampling the darkest shade band
+and the canvas from the rendered window:
+
+| Palette | Canvas R-B | Darkest shade R-B |
+|---|---|---|
+| Shipped plaster | +13 (warm) | +16 (warm) |
+| Slate, surface only | **-13 (cool)** | **+1 (neutral)** |
+| Slate, surface and shadows | -13 (cool) | -17 (cool) |
+
+The rule the shipped palette follows, and the one to keep: **the shade carries
+the same hue direction as the surface.** Leave `NeuShadowDark` behind and the
+shade lands neutral under a cool surface, which reads as grey dirt at the edge of
+every control rather than as the surface in shadow. Nothing warns you - it still
+renders, it just stops looking deliberate.
+
+A surface change is therefore a five-key edit at minimum: `NeuCanvas`,
+`NeuSurface`, `NeuShadowDark`, `NeuShadowLight`, and the two inks re-picked
+against the new surface for contrast.
+
 **Every colour has two keys, a `Color` and a `SolidColorBrush`.** Templates bind
 brushes; the shadow collections need raw `Color`. Restate both or you will change
 half the theme - the fills move and the shadows do not.
