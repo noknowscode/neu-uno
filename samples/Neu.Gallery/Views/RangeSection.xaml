@@ -1,0 +1,94 @@
+<UserControl x:Class="Neu.Gallery.Views.RangeSection"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!--
+    Step 6 specimens: ToggleSwitch, Slider, ProgressBar, ProgressRing. One row
+    per control, rest state first, then each state that has a second channel.
+
+    The two indeterminate specimens each run a Forever storyboard, which holds
+    the compositor at display refresh for as long as this page is open. That is
+    the honest specimen - it is what an indeterminate control costs - but it is
+    why the sheet should not be left running.
+  -->
+  <StackPanel Spacing="34">
+
+    <StackPanel Spacing="13">
+      <TextBlock Style="{StaticResource NeuTitle}" Text="Switch" />
+      <TextBlock Style="{StaticResource NeuBody}"
+                 Foreground="{ThemeResource NeuInkSecondaryBrush}"
+                 Text="Track is an InsetMd groove, knob a RaisedSm pill travelling 24. On fills the groove amber under the knob." />
+
+      <StackPanel Orientation="Horizontal" Spacing="34" HorizontalAlignment="Left">
+        <StackPanel Spacing="8">
+          <ToggleSwitch Style="{StaticResource NeuToggleSwitchStyle}" OffContent="Off" OnContent="On" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="Off" />
+        </StackPanel>
+        <StackPanel Spacing="8">
+          <ToggleSwitch Style="{StaticResource NeuToggleSwitchStyle}" IsOn="True" OffContent="Off" OnContent="On" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="On" />
+        </StackPanel>
+        <StackPanel Spacing="8">
+          <ToggleSwitch Style="{StaticResource NeuToggleSwitchStyle}" IsOn="True" IsEnabled="False" OffContent="Off" OnContent="On" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="On, disabled" />
+        </StackPanel>
+      </StackPanel>
+    </StackPanel>
+
+    <StackPanel Spacing="13">
+      <TextBlock Style="{StaticResource NeuTitle}" Text="Slider" />
+      <TextBlock Style="{StaticResource NeuBody}"
+                 Foreground="{ThemeResource NeuInkSecondaryBrush}"
+                 Text="An 8px InsetMd groove, amber fill to the value, RaisedMd thumb. The thumb inverts to InsetSm while pressed; the groove never moves." />
+
+      <StackPanel Orientation="Horizontal" Spacing="34" HorizontalAlignment="Left">
+        <StackPanel Spacing="8">
+          <Slider Style="{StaticResource NeuSliderStyle}" Width="200" Value="40" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="Value 40" />
+        </StackPanel>
+        <StackPanel Spacing="8">
+          <Slider Style="{StaticResource NeuSliderStyle}" Width="200" Value="70" IsEnabled="False" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="Disabled" />
+        </StackPanel>
+      </StackPanel>
+    </StackPanel>
+
+    <StackPanel Spacing="13">
+      <TextBlock Style="{StaticResource NeuTitle}" Text="Progress" />
+      <TextBlock Style="{StaticResource NeuBody}"
+                 Foreground="{ThemeResource NeuInkSecondaryBrush}"
+                 Text="An InsetSm groove with a raised amber bar. The bar is 8px, not the stock 3: an inset shadow needs something to fall across. ProgressBar has no disabled state." />
+
+      <StackPanel Spacing="21" HorizontalAlignment="Left">
+        <StackPanel Spacing="8">
+          <ProgressBar Style="{StaticResource NeuProgressBarStyle}" Width="233" Value="40" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="Determinate 40" />
+        </StackPanel>
+        <StackPanel Spacing="8">
+          <ProgressBar Style="{StaticResource NeuProgressBarStyle}" Width="233" IsIndeterminate="True" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="Indeterminate" />
+        </StackPanel>
+        <StackPanel Spacing="8">
+          <ProgressBar Style="{StaticResource NeuProgressBarStyle}" Width="233" Value="60" ShowError="True" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="Error" />
+        </StackPanel>
+      </StackPanel>
+
+      <StackPanel Orientation="Horizontal" Spacing="34" HorizontalAlignment="Left">
+        <StackPanel Spacing="8">
+          <ProgressRing Style="{StaticResource NeuProgressRingStyle}" IsActive="True" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="Indeterminate" />
+        </StackPanel>
+        <StackPanel Spacing="8">
+          <ProgressRing Style="{StaticResource NeuProgressRingStyle}" IsActive="True" IsIndeterminate="False" Value="65" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="Determinate 65" />
+        </StackPanel>
+        <StackPanel Spacing="8">
+          <ProgressRing Style="{StaticResource NeuProgressRingStyle}" IsActive="False" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="Inactive" />
+        </StackPanel>
+      </StackPanel>
+    </StackPanel>
+
+  </StackPanel>
+</UserControl>

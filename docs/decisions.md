@@ -226,3 +226,60 @@ It appears as a warning on every template that declares a release transition. It
 harmless here because each `VisualTransition` supplies an explicit `Storyboard`, which
 does run; `GeneratedDuration` only governs the tween Uno would synthesise in its
 absence. Do not rely on it alone to time a transition.
+
+### Step 6 — ToggleSwitch, Slider, ProgressBar, ProgressRing
+
+**Result: all four retemplate cleanly against the stock part names.** Rest, On/Off,
+determinate, indeterminate, error and disabled all render in both themes; four heads
+build. Part and state names were read off the running app with a `detail=full`
+visual-tree snapshot of the stock controls rather than from WinUI's `generic.xaml`,
+which does not match Uno's. Four findings.
+
+**1. A ShadowContainer's Background and shadows ignore `UIElement.Opacity`.**
+Both are painted by the container's own Skia canvas, which sits outside the XAML
+opacity pipeline. The disabled ToggleSwitch was the tell: `Opacity` 0.38 on the
+subtree faded the label and the knob but left the amber track at full strength, so
+the disabled switch read as the *most* saturated specimen on the sheet. **A disabled
+state that needs to mute a Neu surface has to swap the brush or the collection -
+opacity will not do it.** The On fill is now a plain `Rectangle` laid over the groove
+(inset 3, so the inner shadow still rings it) instead of the container's Background,
+because a plain shape does obey opacity.
+
+**2. `NeuFlat` erases a control that has no content of its own.**
+Canvas and surface are one colour, so a surface-coloured shape with no shadow is
+invisible. That is fine for Button or CheckBox, which still show ink or a glyph, but
+a Slider thumb or a switch knob *is* only its shadow: `Flat` deleted it from the
+sheet. Both now go to `NeuRaisedSm` when disabled - shallower, not gone - and
+finding 1 rules out dimming them back into view. The Interaction Brief's
+"Disabled: Flat" holds only for controls that carry content.
+
+**3. ProgressBar never sizes its indeterminate indicators.**
+It sizes `DeterminateProgressBarIndicator` and leaves `IndeterminateProgressBarIndicator`
+and `...2` at width 0, which draws nothing; the first indeterminate bar was an
+invisible groove. Their lengths are fixed in the template (72 and 32). The
+*positions* still come from the control's own `TemplateSettings`
+(`ContainerAnimationStartPosition` / `EndPosition` and the `Container2` pair), which
+it recomputes on resize, so those stay bound.
+
+**4. ProgressRing had to lose its Lottie player.**
+Stock draws itself with an `AnimatedVisualPlayer` hosting a `LottieSKCanvasElement`;
+there is no way to give that a neumorphic surface, so the template replaces it and
+owns the motion. The ring is a 48px circular `InsetSm` well with a stroked `Ellipse`
+arc - a dash pattern, not a `Path`, since Uno's path mini-language throws on
+elliptical arcs at parse time. Indeterminate and determinate are two separate
+Ellipses so a VisualState setter and a binding never land on the same property.
+Determinate needs value-to-sweep arithmetic, which is
+`Helpers/NeuProgressArcConverter.cs` - the library's first converter, and its
+geometry defaults must match the template.
+
+**Perf, carried from the depth work:** both indeterminate visuals repeat forever, and
+a `RepeatBehavior="Forever"` storyboard holds the Skia compositor at display refresh
+for as long as it runs - roughly a third of a core each - and keeps costing while the
+target is `Collapsed`. Both are scoped to the state that needs them (`Indeterminate`,
+`Active`) so leaving the state stops them. Hide an indeterminate control by turning it
+off, not by collapsing it.
+
+**Not verified:** that a click actually toggles the switch, and that dragging moves the
+slider thumb. Synthesised pointer input cannot be aimed at this window from a headless
+run - it lands in Hot Design - so both were verified by rendering their states, not by
+driving them. Same gap as the focus ring in step 5, and the same fix: a human pass.

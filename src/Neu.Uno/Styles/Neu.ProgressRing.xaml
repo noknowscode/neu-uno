@@ -1,0 +1,121 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:utu="using:Uno.Toolkit.UI"
+                    xmlns:neu="using:Neu.Uno">
+
+  <!--
+    ProgressRing. A 48px circular InsetSm well with an amber arc running in it -
+    the ring reading of "InsetSm track, raised amber bar".
+
+    Stock ProgressRing draws itself with a Lottie animation inside an
+    AnimatedVisualPlayer. There is no way to give that a neumorphic surface, so
+    the player is replaced outright and this template owns the motion.
+
+    The arc is an Ellipse stroked with a dash pattern, not a Path: Uno's path
+    mini-language throws on elliptical arcs at parse time, and a stroked circle
+    needs no arc geometry at all. Dash lengths are multiples of StrokeThickness,
+    so one full turn of the 48px ring at thickness 5 is
+    PI * (48 - 5) / 5 = 27.02 units. The indeterminate arc is 8.1 of those,
+    just under a third. The dash starts at 3 o'clock, hence the -90 rotation.
+
+    Two arcs rather than one, because indeterminate wants a fixed dash and
+    determinate wants a bound one; sharing an element would put a VisualState
+    setter and a binding on the same property.
+
+    Perf: the spin repeats forever, which holds the Skia compositor at display
+    refresh - roughly a third of a core - and keeps costing even while the ring
+    is Collapsed. It is scoped to the Active state, so going Inactive stops it.
+    Set IsActive="False" rather than hiding a spinning ring.
+  -->
+
+  <neu:NeuProgressArcConverter x:Key="NeuProgressArc"
+                               Diameter="48"
+                               StrokeThickness="5" />
+
+  <Style x:Key="NeuProgressRingStyle" TargetType="ProgressRing">
+    <Setter Property="Background" Value="{ThemeResource NeuSurfaceBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource NeuAccentBrush}" />
+    <Setter Property="Width" Value="48" />
+    <Setter Property="Height" Value="48" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="IsTabStop" Value="False" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ProgressRing">
+          <Grid x:Name="LayoutRoot" Width="48" Height="48">
+
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup x:Name="SizeStates">
+                <VisualState x:Name="Large" />
+                <VisualState x:Name="Small" />
+              </VisualStateGroup>
+
+              <VisualStateGroup x:Name="ActiveStates">
+                <VisualState x:Name="Inactive" />
+
+                <VisualState x:Name="Active">
+                  <Storyboard RepeatBehavior="Forever">
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="IndeterminateArc"
+                                                   Storyboard.TargetProperty="Visibility">
+                      <DiscreteObjectKeyFrame KeyTime="0" Value="Visible" />
+                    </ObjectAnimationUsingKeyFrames>
+                    <DoubleAnimation Storyboard.TargetName="SpinTransform"
+                                     Storyboard.TargetProperty="Angle"
+                                     From="-90"
+                                     To="270"
+                                     Duration="0:0:1.2" />
+                  </Storyboard>
+                </VisualState>
+
+                <VisualState x:Name="DeterminateActive">
+                  <VisualState.Setters>
+                    <Setter Target="DeterminateArc.Visibility" Value="Visible" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+
+            <utu:ShadowContainer x:Name="Well"
+                                 Width="48"
+                                 Height="48"
+                                 Background="{TemplateBinding Background}"
+                                 CornerRadius="24"
+                                 Shadows="{ThemeResource NeuInsetSm}">
+              <Grid Width="48" Height="48" CornerRadius="24" />
+            </utu:ShadowContainer>
+
+            <Ellipse x:Name="IndeterminateArc"
+                     Width="43"
+                     Height="43"
+                     RenderTransformOrigin="0.5,0.5"
+                     Stroke="{TemplateBinding Foreground}"
+                     StrokeThickness="5"
+                     StrokeDashCap="Round"
+                     StrokeDashArray="8.1,18.92"
+                     Visibility="Collapsed">
+              <Ellipse.RenderTransform>
+                <RotateTransform x:Name="SpinTransform" Angle="-90" />
+              </Ellipse.RenderTransform>
+            </Ellipse>
+
+            <Ellipse x:Name="DeterminateArc"
+                     Width="43"
+                     Height="43"
+                     RenderTransformOrigin="0.5,0.5"
+                     Stroke="{TemplateBinding Foreground}"
+                     StrokeThickness="5"
+                     StrokeDashCap="Round"
+                     StrokeDashArray="{Binding Value, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource NeuProgressArc}}"
+                     Visibility="Collapsed">
+              <Ellipse.RenderTransform>
+                <RotateTransform Angle="-90" />
+              </Ellipse.RenderTransform>
+            </Ellipse>
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+</ResourceDictionary>

@@ -1,0 +1,163 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:utu="using:Uno.Toolkit.UI">
+
+  <!--
+    ProgressBar. An 8px InsetSm groove with a raised amber bar in it. Stock is
+    3px, which is too thin for an inset shadow to read - there is nothing for
+    the shade to fall across - so the Neu bar is 8.
+
+    The groove is a ShadowContainer behind the indicators, not around them:
+    ProgressBar sizes DeterminateProgressBarIndicator itself, and an amber Fill
+    inside a ShadowContainer's child would suppress the inner shadow (rule 1).
+    The indicators live in a CornerRadius Border so the indeterminate pass is
+    clipped to the groove's pill.
+
+    Indeterminate keyframe positions come from the control's own
+    TemplateSettings, which it recomputes on every size change. Hard-coding them
+    would break on resize. The indicator lengths, though, are fixed here: the
+    control sizes only DeterminateProgressBarIndicator and leaves the two
+    indeterminate rectangles at width 0, which draws nothing at all.
+
+    Perf: the indeterminate storyboard repeats forever, and a Forever storyboard
+    holds the Skia compositor at display refresh for as long as it runs - about a
+    third of a core, and it keeps costing even while the bar is Collapsed. It is
+    scoped to the Indeterminate state so leaving that state stops it; do not
+    leave an indeterminate ProgressBar parked off-screen.
+  -->
+
+  <Style x:Key="NeuProgressBarStyle" TargetType="ProgressBar">
+    <Setter Property="Background" Value="{ThemeResource NeuSurfaceBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource NeuAccentBrush}" />
+    <Setter Property="MinHeight" Value="8" />
+    <Setter Property="Height" Value="8" />
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="IsTabStop" Value="False" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ProgressBar">
+          <Grid x:Name="LayoutRoot" Height="8">
+
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup x:Name="CommonStates">
+                <VisualState x:Name="Determinate" />
+
+                <VisualState x:Name="Indeterminate">
+                  <Storyboard RepeatBehavior="Forever">
+                    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="IndeterminateTranslate"
+                                                   Storyboard.TargetProperty="X">
+                      <SplineDoubleKeyFrame KeyTime="0:0:0"
+                                            Value="{Binding TemplateSettings.ContainerAnimationStartPosition, RelativeSource={RelativeSource TemplatedParent}}"
+                                            KeySpline="{StaticResource NeuEaseSmooth}" />
+                      <SplineDoubleKeyFrame KeyTime="0:0:1.5"
+                                            Value="{Binding TemplateSettings.ContainerAnimationEndPosition, RelativeSource={RelativeSource TemplatedParent}}"
+                                            KeySpline="{StaticResource NeuEaseSmooth}" />
+                    </DoubleAnimationUsingKeyFrames>
+
+                    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Indeterminate2Translate"
+                                                   Storyboard.TargetProperty="X">
+                      <SplineDoubleKeyFrame KeyTime="0:0:0"
+                                            Value="{Binding TemplateSettings.Container2AnimationStartPosition, RelativeSource={RelativeSource TemplatedParent}}"
+                                            KeySpline="{StaticResource NeuEaseSmooth}" />
+                      <SplineDoubleKeyFrame KeyTime="0:0:1.5"
+                                            Value="{Binding TemplateSettings.Container2AnimationEndPosition, RelativeSource={RelativeSource TemplatedParent}}"
+                                            KeySpline="{StaticResource NeuEaseSmooth}" />
+                    </DoubleAnimationUsingKeyFrames>
+
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="DeterminateProgressBarIndicator"
+                                                   Storyboard.TargetProperty="Visibility">
+                      <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed" />
+                    </ObjectAnimationUsingKeyFrames>
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="IndeterminateProgressBarIndicator"
+                                                   Storyboard.TargetProperty="Visibility">
+                      <DiscreteObjectKeyFrame KeyTime="0" Value="Visible" />
+                    </ObjectAnimationUsingKeyFrames>
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="IndeterminateProgressBarIndicator2"
+                                                   Storyboard.TargetProperty="Visibility">
+                      <DiscreteObjectKeyFrame KeyTime="0" Value="Visible" />
+                    </ObjectAnimationUsingKeyFrames>
+                  </Storyboard>
+                </VisualState>
+
+                <!-- Semantic states keep the depth and change only the ink. -->
+                <VisualState x:Name="Error">
+                  <VisualState.Setters>
+                    <Setter Target="DeterminateProgressBarIndicator.Fill" Value="{ThemeResource NeuAlertBrush}" />
+                    <Setter Target="IndeterminateProgressBarIndicator.Fill" Value="{ThemeResource NeuAlertBrush}" />
+                    <Setter Target="IndeterminateProgressBarIndicator2.Fill" Value="{ThemeResource NeuAlertBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="Paused">
+                  <VisualState.Setters>
+                    <Setter Target="DeterminateProgressBarIndicator.Fill" Value="{ThemeResource NeuInkSecondaryBrush}" />
+                    <Setter Target="IndeterminateProgressBarIndicator.Fill" Value="{ThemeResource NeuInkSecondaryBrush}" />
+                    <Setter Target="IndeterminateProgressBarIndicator2.Fill" Value="{ThemeResource NeuInkSecondaryBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="Updating" />
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+
+            <utu:ShadowContainer x:Name="Groove"
+                                 Height="8"
+                                 Background="{TemplateBinding Background}"
+                                 CornerRadius="4"
+                                 Shadows="{ThemeResource NeuInsetSm}">
+              <Grid Height="8" CornerRadius="4" />
+            </utu:ShadowContainer>
+
+            <Border x:Name="ProgressBarRoot"
+                    Height="8"
+                    CornerRadius="4"
+                    Background="Transparent">
+              <Grid>
+                <Rectangle x:Name="ProgressBarTrack"
+                           Height="8"
+                           RadiusX="4"
+                           RadiusY="4"
+                           Fill="Transparent" />
+
+                <Rectangle x:Name="DeterminateProgressBarIndicator"
+                           Height="8"
+                           RadiusX="4"
+                           RadiusY="4"
+                           HorizontalAlignment="Left"
+                           Fill="{TemplateBinding Foreground}" />
+
+                <Rectangle x:Name="IndeterminateProgressBarIndicator"
+                           Width="72"
+                           Height="8"
+                           RadiusX="4"
+                           RadiusY="4"
+                           HorizontalAlignment="Left"
+                           Visibility="Collapsed"
+                           Fill="{TemplateBinding Foreground}">
+                  <Rectangle.RenderTransform>
+                    <TranslateTransform x:Name="IndeterminateTranslate" />
+                  </Rectangle.RenderTransform>
+                </Rectangle>
+
+                <Rectangle x:Name="IndeterminateProgressBarIndicator2"
+                           Width="32"
+                           Height="8"
+                           RadiusX="4"
+                           RadiusY="4"
+                           HorizontalAlignment="Left"
+                           Visibility="Collapsed"
+                           Fill="{TemplateBinding Foreground}">
+                  <Rectangle.RenderTransform>
+                    <TranslateTransform x:Name="Indeterminate2Translate" />
+                  </Rectangle.RenderTransform>
+                </Rectangle>
+              </Grid>
+            </Border>
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+</ResourceDictionary>

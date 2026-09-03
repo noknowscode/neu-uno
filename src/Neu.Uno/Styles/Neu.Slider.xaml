@@ -1,0 +1,313 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:utu="using:Uno.Toolkit.UI">
+
+  <!--
+    Slider. An 8px InsetMd groove, an amber fill up to the value, and a 24px
+    RaisedMd thumb that inverts to InsetSm while pressed.
+
+    The groove is a ShadowContainer laid behind the track, not around it.
+    Slider's own code sizes HorizontalDecreaseRect and positions the thumb, so
+    those parts stay plain Rectangles at the sizes it expects; wrapping them
+    would put the layout under the container's control. The amber fill also has
+    to paint over the groove rather than inside it - a Fill on a
+    ShadowContainer's child suppresses the inner shadow (rule 1).
+
+    The thumb owns its own press state. A Setter Target cannot cross into a
+    nested ControlTemplate's name scope, so the Slider's CommonStates cannot
+    reach the thumb's surface; the Thumb style below carries the swap instead,
+    driven by Thumb's own CommonStates.
+
+    Both orientations are templated. Slider resolves the vertical parts on
+    apply-template regardless of Orientation, so omitting them leaves the
+    control holding null references.
+  -->
+
+  <Style x:Key="NeuSliderThumbStyle" TargetType="Thumb">
+    <Setter Property="Background" Value="{ThemeResource NeuSurfaceBrush}" />
+    <Setter Property="Width" Value="24" />
+    <Setter Property="Height" Value="24" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Thumb">
+          <Grid>
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup x:Name="CommonStates">
+                <VisualState x:Name="Normal" />
+
+                <VisualState x:Name="PointerOver">
+                  <VisualState.Setters>
+                    <Setter Target="ThumbSurface.Background" Value="{ThemeResource NeuSurfaceHoverBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="Pressed">
+                  <VisualState.Setters>
+                    <Setter Target="ThumbSurface.Shadows" Value="{ThemeResource NeuInsetSm}" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <!--
+                  Shallower, not flat. A surface-coloured thumb with no shadow
+                  on a surface-coloured canvas disappears, and Opacity cannot
+                  fade it back into view - a ShadowContainer's fill and shadows
+                  are drawn by its Skia canvas, which ignores UIElement.Opacity.
+                -->
+                <VisualState x:Name="Disabled">
+                  <VisualState.Setters>
+                    <Setter Target="ThumbSurface.Shadows" Value="{ThemeResource NeuRaisedSm}" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+
+            <utu:ShadowContainer x:Name="ThumbSurface"
+                                 Width="24"
+                                 Height="24"
+                                 Background="{TemplateBinding Background}"
+                                 CornerRadius="12"
+                                 Shadows="{ThemeResource NeuRaisedMd}">
+              <Grid Width="24" Height="24" CornerRadius="12" />
+            </utu:ShadowContainer>
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="NeuSliderStyle" TargetType="Slider">
+    <Setter Property="Background" Value="{ThemeResource NeuSurfaceBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource NeuAccentBrush}" />
+    <Setter Property="MinHeight" Value="{ThemeResource NeuTouchTargetMin}" />
+    <Setter Property="FontSize" Value="{ThemeResource NeuBodyFontSize}" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="UseSystemFocusVisuals" Value="False" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Slider">
+          <Grid x:Name="Root" Background="Transparent">
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup x:Name="CommonStates">
+                <VisualState x:Name="Normal" />
+                <VisualState x:Name="PointerOver" />
+                <VisualState x:Name="Pressed" />
+
+                <VisualState x:Name="Disabled">
+                  <VisualState.Setters>
+                    <Setter Target="HorizontalGroove.Shadows" Value="{ThemeResource NeuFlat}" />
+                    <Setter Target="VerticalGroove.Shadows" Value="{ThemeResource NeuFlat}" />
+                    <Setter Target="HorizontalDecreaseRect.Opacity" Value="{ThemeResource NeuInkDisabledOpacity}" />
+                    <Setter Target="VerticalDecreaseRect.Opacity" Value="{ThemeResource NeuInkDisabledOpacity}" />
+                    <Setter Target="HeaderContentPresenter.Opacity" Value="{ThemeResource NeuInkDisabledOpacity}" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+
+              <VisualStateGroup x:Name="FocusEngagementStates">
+                <VisualState x:Name="FocusDisengaged" />
+                <VisualState x:Name="FocusEngagedHorizontal">
+                  <VisualState.Setters>
+                    <Setter Target="HorizontalFocusRing.Shadows" Value="{ThemeResource NeuFocusRing}" />
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="FocusEngagedVertical">
+                  <VisualState.Setters>
+                    <Setter Target="VerticalFocusRing.Shadows" Value="{ThemeResource NeuFocusRing}" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+
+            <ContentPresenter x:Name="HeaderContentPresenter"
+                              Grid.Row="0"
+                              Content="{TemplateBinding Header}"
+                              ContentTemplate="{TemplateBinding HeaderTemplate}"
+                              Foreground="{ThemeResource NeuInkSecondaryBrush}"
+                              Margin="0,0,0,8"
+                              Visibility="Collapsed"
+                              AutomationProperties.AccessibilityView="Raw" />
+
+            <Grid x:Name="SliderContainer" Grid.Row="1" Background="Transparent">
+
+              <!-- Horizontal -->
+              <Grid x:Name="HorizontalTemplate" MinHeight="44">
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="*" />
+                  <RowDefinition Height="Auto" />
+                  <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto" />
+                  <ColumnDefinition Width="Auto" />
+                  <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <utu:ShadowContainer x:Name="HorizontalFocusRing"
+                                     Grid.Row="1"
+                                     Grid.ColumnSpan="3"
+                                     Height="8"
+                                     VerticalAlignment="Center"
+                                     Background="{TemplateBinding Background}"
+                                     CornerRadius="4"
+                                     Shadows="{ThemeResource NeuFlat}">
+                  <Grid Height="8" CornerRadius="4" />
+                </utu:ShadowContainer>
+
+                <utu:ShadowContainer x:Name="HorizontalGroove"
+                                     Grid.Row="1"
+                                     Grid.ColumnSpan="3"
+                                     Height="8"
+                                     VerticalAlignment="Center"
+                                     Background="{TemplateBinding Background}"
+                                     CornerRadius="4"
+                                     Shadows="{ThemeResource NeuInsetMd}">
+                  <Grid Height="8" CornerRadius="4" />
+                </utu:ShadowContainer>
+
+                <!-- Slider sizes these two itself; keep them plain rectangles. -->
+                <Rectangle x:Name="HorizontalTrackRect"
+                           Grid.Row="1"
+                           Grid.ColumnSpan="3"
+                           Height="8"
+                           RadiusX="4"
+                           RadiusY="4"
+                           Fill="Transparent" />
+
+                <Rectangle x:Name="HorizontalDecreaseRect"
+                           Grid.Row="1"
+                           Grid.Column="0"
+                           Height="8"
+                           RadiusX="4"
+                           RadiusY="4"
+                           Fill="{TemplateBinding Foreground}" />
+
+                <TickBar x:Name="TopTickBar"
+                         Grid.Row="0"
+                         Grid.ColumnSpan="3"
+                         Height="4"
+                         Margin="0,0,0,5"
+                         VerticalAlignment="Bottom"
+                         Fill="{ThemeResource NeuInkSecondaryBrush}"
+                         Visibility="Collapsed" />
+
+                <TickBar x:Name="HorizontalInlineTickBar"
+                         Grid.Row="1"
+                         Grid.ColumnSpan="3"
+                         Height="8"
+                         Fill="{ThemeResource NeuSurfaceBrush}" />
+
+                <TickBar x:Name="BottomTickBar"
+                         Grid.Row="2"
+                         Grid.ColumnSpan="3"
+                         Height="4"
+                         Margin="0,5,0,0"
+                         VerticalAlignment="Top"
+                         Fill="{ThemeResource NeuInkSecondaryBrush}"
+                         Visibility="Collapsed" />
+
+                <Thumb x:Name="HorizontalThumb"
+                       Grid.Row="0"
+                       Grid.RowSpan="3"
+                       Grid.Column="1"
+                       Style="{StaticResource NeuSliderThumbStyle}"
+                       AutomationProperties.AccessibilityView="Raw"
+                       DataContext="{TemplateBinding Value}" />
+              </Grid>
+
+              <!-- Vertical -->
+              <Grid x:Name="VerticalTemplate" MinWidth="44" Visibility="Collapsed">
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="*" />
+                  <RowDefinition Height="Auto" />
+                  <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                  <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <utu:ShadowContainer x:Name="VerticalFocusRing"
+                                     Grid.Column="1"
+                                     Grid.RowSpan="3"
+                                     Width="8"
+                                     HorizontalAlignment="Center"
+                                     Background="{TemplateBinding Background}"
+                                     CornerRadius="4"
+                                     Shadows="{ThemeResource NeuFlat}">
+                  <Grid Width="8" CornerRadius="4" />
+                </utu:ShadowContainer>
+
+                <utu:ShadowContainer x:Name="VerticalGroove"
+                                     Grid.Column="1"
+                                     Grid.RowSpan="3"
+                                     Width="8"
+                                     HorizontalAlignment="Center"
+                                     Background="{TemplateBinding Background}"
+                                     CornerRadius="4"
+                                     Shadows="{ThemeResource NeuInsetMd}">
+                  <Grid Width="8" CornerRadius="4" />
+                </utu:ShadowContainer>
+
+                <Rectangle x:Name="VerticalTrackRect"
+                           Grid.Column="1"
+                           Grid.RowSpan="3"
+                           Width="8"
+                           RadiusX="4"
+                           RadiusY="4"
+                           Fill="Transparent" />
+
+                <Rectangle x:Name="VerticalDecreaseRect"
+                           Grid.Column="1"
+                           Grid.Row="2"
+                           Width="8"
+                           RadiusX="4"
+                           RadiusY="4"
+                           Fill="{TemplateBinding Foreground}" />
+
+                <TickBar x:Name="LeftTickBar"
+                         Grid.Column="0"
+                         Grid.RowSpan="3"
+                         Width="4"
+                         Margin="0,0,5,0"
+                         HorizontalAlignment="Right"
+                         Fill="{ThemeResource NeuInkSecondaryBrush}"
+                         Visibility="Collapsed" />
+
+                <TickBar x:Name="VerticalInlineTickBar"
+                         Grid.Column="1"
+                         Grid.RowSpan="3"
+                         Width="8"
+                         Fill="{ThemeResource NeuSurfaceBrush}" />
+
+                <TickBar x:Name="RightTickBar"
+                         Grid.Column="2"
+                         Grid.RowSpan="3"
+                         Width="4"
+                         Margin="5,0,0,0"
+                         HorizontalAlignment="Left"
+                         Fill="{ThemeResource NeuInkSecondaryBrush}"
+                         Visibility="Collapsed" />
+
+                <Thumb x:Name="VerticalThumb"
+                       Grid.Row="1"
+                       Grid.Column="0"
+                       Grid.ColumnSpan="3"
+                       Style="{StaticResource NeuSliderThumbStyle}"
+                       AutomationProperties.AccessibilityView="Raw"
+                       DataContext="{TemplateBinding Value}" />
+              </Grid>
+            </Grid>
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+</ResourceDictionary>

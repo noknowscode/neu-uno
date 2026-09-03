@@ -1,0 +1,265 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:utu="using:Uno.Toolkit.UI">
+
+  <!--
+    ToggleSwitch. The track is a 52x28 InsetMd groove; the knob is a 20x20
+    RaisedSm pill that travels 24 across it. On fills the groove with amber
+    under the knob - the second channel, since depth alone never carries a
+    state. Disabled flattens the groove but leaves the knob at RaisedSm: a
+    surface-coloured knob with no shadow on a surface-coloured canvas is
+    invisible, so Flat everywhere would erase the control.
+
+    Geometry is fixed rather than measured. The travel is written as a literal
+    24 (44 bounds - 20 knob) in the ToggleStates storyboards, and SwitchKnobBounds
+    is a transparent 44-wide rectangle so the drag math Uno computes from
+    SwitchKnobBounds.ActualWidth - SwitchKnob.ActualWidth lands on the same
+    number. Change one and the other has to follow.
+
+    Radii are half the height, never NeuRadiusPill: 999 renders as an oval on
+    Skia (decisions.md).
+  -->
+
+  <Style x:Key="NeuToggleSwitchStyle" TargetType="ToggleSwitch">
+    <Setter Property="Background" Value="{ThemeResource NeuSurfaceBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource NeuInkBrush}" />
+    <Setter Property="MinHeight" Value="{ThemeResource NeuTouchTargetMin}" />
+    <Setter Property="FontSize" Value="{ThemeResource NeuBodyFontSize}" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="HorizontalContentAlignment" Value="Left" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="UseSystemFocusVisuals" Value="False" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ToggleSwitch">
+          <Grid x:Name="Root" Background="Transparent">
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup x:Name="CommonStates">
+                <VisualState x:Name="Normal" />
+
+                <VisualState x:Name="PointerOver">
+                  <VisualState.Setters>
+                    <Setter Target="Knob.Background" Value="{ThemeResource NeuSurfaceHoverBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="Pressed">
+                  <Storyboard>
+                    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="KnobScale"
+                                                   Storyboard.TargetProperty="ScaleX">
+                      <SplineDoubleKeyFrame KeyTime="0:0:0.150" Value="{ThemeResource NeuPressScale}" KeySpline="{StaticResource NeuEaseSmooth}" />
+                    </DoubleAnimationUsingKeyFrames>
+                    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="KnobScale"
+                                                   Storyboard.TargetProperty="ScaleY">
+                      <SplineDoubleKeyFrame KeyTime="0:0:0.150" Value="{ThemeResource NeuPressScale}" KeySpline="{StaticResource NeuEaseSmooth}" />
+                    </DoubleAnimationUsingKeyFrames>
+                  </Storyboard>
+                </VisualState>
+
+                <VisualState x:Name="Disabled">
+                  <VisualState.Setters>
+                    <Setter Target="Track.Shadows" Value="{ThemeResource NeuFlat}" />
+                    <Setter Target="Knob.Shadows" Value="{ThemeResource NeuRaisedSm}" />
+                    <Setter Target="SwitchArea.Opacity" Value="{ThemeResource NeuInkDisabledOpacity}" />
+                    <Setter Target="HeaderContentPresenter.Opacity" Value="{ThemeResource NeuInkDisabledOpacity}" />
+                    <Setter Target="OffContentPresenter.Opacity" Value="{ThemeResource NeuInkDisabledOpacity}" />
+                    <Setter Target="OnContentPresenter.Opacity" Value="{ThemeResource NeuInkDisabledOpacity}" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+
+              <VisualStateGroup x:Name="ToggleStates">
+                <VisualStateGroup.Transitions>
+                  <VisualTransition From="Off" To="On" GeneratedDuration="0:0:0.200" />
+                  <VisualTransition From="On" To="Off" GeneratedDuration="0:0:0.200" />
+                </VisualStateGroup.Transitions>
+
+                <VisualState x:Name="Dragging" />
+
+                <VisualState x:Name="Off">
+                  <Storyboard>
+                    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="KnobTranslateTransform"
+                                                   Storyboard.TargetProperty="X">
+                      <SplineDoubleKeyFrame KeyTime="0:0:0.200" Value="0" KeySpline="{StaticResource NeuEaseSmooth}" />
+                    </DoubleAnimationUsingKeyFrames>
+                    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="TrackFill"
+                                                   Storyboard.TargetProperty="Opacity">
+                      <SplineDoubleKeyFrame KeyTime="0:0:0.200" Value="0" KeySpline="{StaticResource NeuEaseSmooth}" />
+                    </DoubleAnimationUsingKeyFrames>
+                  </Storyboard>
+                </VisualState>
+
+                <VisualState x:Name="On">
+                  <Storyboard>
+                    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="KnobTranslateTransform"
+                                                   Storyboard.TargetProperty="X">
+                      <SplineDoubleKeyFrame KeyTime="0:0:0.200" Value="24" KeySpline="{StaticResource NeuEaseSmooth}" />
+                    </DoubleAnimationUsingKeyFrames>
+                    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="TrackFill"
+                                                   Storyboard.TargetProperty="Opacity">
+                      <SplineDoubleKeyFrame KeyTime="0:0:0.200" Value="1" KeySpline="{StaticResource NeuEaseSmooth}" />
+                    </DoubleAnimationUsingKeyFrames>
+                  </Storyboard>
+                </VisualState>
+              </VisualStateGroup>
+
+              <VisualStateGroup x:Name="ContentStates">
+                <VisualState x:Name="OffContent">
+                  <VisualState.Setters>
+                    <Setter Target="OffContentPresenter.Visibility" Value="Visible" />
+                    <Setter Target="OnContentPresenter.Visibility" Value="Collapsed" />
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="OnContent">
+                  <VisualState.Setters>
+                    <Setter Target="OffContentPresenter.Visibility" Value="Collapsed" />
+                    <Setter Target="OnContentPresenter.Visibility" Value="Visible" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+
+              <VisualStateGroup x:Name="FocusStates">
+                <VisualState x:Name="Unfocused" />
+                <VisualState x:Name="PointerFocused" />
+                <VisualState x:Name="Focused">
+                  <VisualState.Setters>
+                    <Setter Target="FocusRing.Shadows" Value="{ThemeResource NeuFocusRing}" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+
+            <ContentPresenter x:Name="HeaderContentPresenter"
+                              Grid.Row="0"
+                              Content="{TemplateBinding Header}"
+                              ContentTemplate="{TemplateBinding HeaderTemplate}"
+                              Foreground="{ThemeResource NeuInkSecondaryBrush}"
+                              Margin="0,0,0,8"
+                              Visibility="Collapsed"
+                              AutomationProperties.AccessibilityView="Raw" />
+
+            <Grid x:Name="SwitchArea"
+                  Grid.Row="1"
+                  Background="Transparent"
+                  ColumnSpacing="13">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+              </Grid.ColumnDefinitions>
+
+              <!-- Focus ring sits behind the track and follows its pill radius. -->
+              <utu:ShadowContainer x:Name="FocusRing"
+                                   Grid.Column="0"
+                                   Width="52"
+                                   Height="28"
+                                   VerticalAlignment="Center"
+                                   Background="{TemplateBinding Background}"
+                                   CornerRadius="14"
+                                   Shadows="{ThemeResource NeuFlat}">
+                <Grid Width="52" Height="28" CornerRadius="14" />
+              </utu:ShadowContainer>
+
+              <utu:ShadowContainer x:Name="Track"
+                                   Grid.Column="0"
+                                   Width="52"
+                                   Height="28"
+                                   VerticalAlignment="Center"
+                                   Background="{TemplateBinding Background}"
+                                   CornerRadius="14"
+                                   Shadows="{ThemeResource NeuInsetMd}">
+                <Grid Width="52" Height="28" CornerRadius="14" />
+              </utu:ShadowContainer>
+
+              <!--
+                The On fill is a plain Rectangle over the groove, not the
+                container's Background: a ShadowContainer's Background and
+                shadows are painted by its Skia canvas, which ignores
+                UIElement.Opacity, so an amber Background would stay at full
+                strength when the control is disabled. Inset 3 all round so the
+                groove's inner shadow still rings it.
+              -->
+              <Rectangle x:Name="TrackFill"
+                         Grid.Column="0"
+                         Width="46"
+                         Height="22"
+                         RadiusX="11"
+                         RadiusY="11"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         Fill="{ThemeResource NeuAccentBrush}"
+                         Opacity="0" />
+
+              <!-- Travel bounds: transparent, 44 wide, so 44 - 20 = the 24 above. -->
+              <Grid x:Name="SwitchAreaGrid"
+                    Grid.Column="0"
+                    Width="44"
+                    Height="20"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+                <Rectangle x:Name="SwitchKnobBounds"
+                           Width="44"
+                           Height="20"
+                           Fill="Transparent" />
+
+                <utu:ShadowContainer x:Name="Knob"
+                                     Width="20"
+                                     Height="20"
+                                     HorizontalAlignment="Left"
+                                     VerticalAlignment="Center"
+                                     RenderTransformOrigin="0.5,0.5"
+                                     Background="{TemplateBinding Background}"
+                                     CornerRadius="10"
+                                     Shadows="{ThemeResource NeuRaisedSm}">
+                  <utu:ShadowContainer.RenderTransform>
+                    <TransformGroup>
+                      <ScaleTransform x:Name="KnobScale" />
+                      <TranslateTransform x:Name="KnobTranslateTransform" />
+                    </TransformGroup>
+                  </utu:ShadowContainer.RenderTransform>
+                  <Grid x:Name="SwitchKnob" Width="20" Height="20" CornerRadius="10" />
+                </utu:ShadowContainer>
+              </Grid>
+
+              <Thumb x:Name="SwitchThumb"
+                     Grid.Column="0"
+                     Width="52"
+                     Height="28"
+                     VerticalAlignment="Center"
+                     AutomationProperties.AccessibilityView="Raw">
+                <Thumb.Template>
+                  <ControlTemplate TargetType="Thumb">
+                    <Rectangle Fill="Transparent" />
+                  </ControlTemplate>
+                </Thumb.Template>
+              </Thumb>
+
+              <ContentPresenter x:Name="OffContentPresenter"
+                                Grid.Column="1"
+                                Content="{TemplateBinding OffContent}"
+                                ContentTemplate="{TemplateBinding OffContentTemplate}"
+                                Foreground="{TemplateBinding Foreground}"
+                                VerticalAlignment="Center"
+                                AutomationProperties.AccessibilityView="Raw" />
+
+              <ContentPresenter x:Name="OnContentPresenter"
+                                Grid.Column="1"
+                                Content="{TemplateBinding OnContent}"
+                                ContentTemplate="{TemplateBinding OnContentTemplate}"
+                                Foreground="{TemplateBinding Foreground}"
+                                VerticalAlignment="Center"
+                                Visibility="Collapsed"
+                                AutomationProperties.AccessibilityView="Raw" />
+            </Grid>
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+</ResourceDictionary>
