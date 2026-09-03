@@ -74,4 +74,15 @@
   <!-- Minimum touch target -->
   <x:Double x:Key="NeuTouchTargetMin">44</x:Double>
 
+  <!--
+    Motion. House values from xaml-design-polish: one easing curve for every
+    transition, fast/normal durations, a firm 0.98 press. The press signature is
+    Raised -> Flat -> Inset. The Flat midpoint holds for 75ms, half the fast
+    duration; KeyTime has no resource form, so templates inline 0:0:0.075.
+  -->
+  <KeySpline x:Key="NeuEaseSmooth" ControlPoint1="0.22,1" ControlPoint2="0.36,1" />
+  <Duration x:Key="NeuDurationFast">0:0:0.150</Duration>
+  <Duration x:Key="NeuDurationNormal">0:0:0.200</Duration>
+  <x:Double x:Key="NeuPressScale">0.98</x:Double>
+
 </ResourceDictionary>

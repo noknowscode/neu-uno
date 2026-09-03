@@ -22,6 +22,9 @@
     Design Brief table. The tabled reds measured 4.14:1 and 4.09:1 as message ink
     on the canvas, under the 4.5:1 floor. See tools/contrast-check.ps1.
 
+    NeuSurfaceHover / NeuAccentHover are the rest colors at +2% HSL lightness,
+    the PointerOver channel from the Interaction Brief. Hover is never elevation.
+
     "Default" mirrors "Light" so a HighContrast request resolves instead of
     throwing. Step 9 replaces it with the real NeuHighContrast dictionary.
   -->
@@ -38,6 +41,8 @@
       <Color x:Key="NeuAccent">#C99436</Color>
       <Color x:Key="NeuAlert">#A64134</Color>
       <Color x:Key="NeuOnAccent">#1F1F1E</Color>
+      <Color x:Key="NeuSurfaceHover">#EDE8E2</Color>
+      <Color x:Key="NeuAccentHover">#CB983E</Color>
       <Color x:Key="NeuOnAlert">#ECE7E1</Color>
 
       <x:Double x:Key="NeuShadowLightOpacity">0.72</x:Double>
@@ -50,6 +55,8 @@
       <SolidColorBrush x:Key="NeuAccentBrush" Color="#C99436" />
       <SolidColorBrush x:Key="NeuAlertBrush" Color="#A64134" />
       <SolidColorBrush x:Key="NeuOnAccentBrush" Color="#1F1F1E" />
+      <SolidColorBrush x:Key="NeuSurfaceHoverBrush" Color="#EDE8E2" />
+      <SolidColorBrush x:Key="NeuAccentHoverBrush" Color="#CB983E" />
       <SolidColorBrush x:Key="NeuOnAlertBrush" Color="#ECE7E1" />
     </ResourceDictionary>
 
@@ -63,6 +70,8 @@
       <Color x:Key="NeuAccent">#D9A441</Color>
       <Color x:Key="NeuAlert">#E5786A</Color>
       <Color x:Key="NeuOnAccent">#1F1F1E</Color>
+      <Color x:Key="NeuSurfaceHover">#31302E</Color>
+      <Color x:Key="NeuAccentHover">#DBA84A</Color>
       <Color x:Key="NeuOnAlert">#1F1F1E</Color>
 
       <x:Double x:Key="NeuShadowLightOpacity">0.55</x:Double>
@@ -75,6 +84,8 @@
       <SolidColorBrush x:Key="NeuAccentBrush" Color="#D9A441" />
       <SolidColorBrush x:Key="NeuAlertBrush" Color="#E5786A" />
       <SolidColorBrush x:Key="NeuOnAccentBrush" Color="#1F1F1E" />
+      <SolidColorBrush x:Key="NeuSurfaceHoverBrush" Color="#31302E" />
+      <SolidColorBrush x:Key="NeuAccentHoverBrush" Color="#DBA84A" />
       <SolidColorBrush x:Key="NeuOnAlertBrush" Color="#1F1F1E" />
     </ResourceDictionary>
 
@@ -88,6 +99,8 @@
       <Color x:Key="NeuAccent">#C99436</Color>
       <Color x:Key="NeuAlert">#A64134</Color>
       <Color x:Key="NeuOnAccent">#1F1F1E</Color>
+      <Color x:Key="NeuSurfaceHover">#EDE8E2</Color>
+      <Color x:Key="NeuAccentHover">#CB983E</Color>
       <Color x:Key="NeuOnAlert">#ECE7E1</Color>
 
       <x:Double x:Key="NeuShadowLightOpacity">0.72</x:Double>
@@ -100,6 +113,8 @@
       <SolidColorBrush x:Key="NeuAccentBrush" Color="#C99436" />
       <SolidColorBrush x:Key="NeuAlertBrush" Color="#A64134" />
       <SolidColorBrush x:Key="NeuOnAccentBrush" Color="#1F1F1E" />
+      <SolidColorBrush x:Key="NeuSurfaceHoverBrush" Color="#EDE8E2" />
+      <SolidColorBrush x:Key="NeuAccentHoverBrush" Color="#CB983E" />
       <SolidColorBrush x:Key="NeuOnAlertBrush" Color="#ECE7E1" />
     </ResourceDictionary>
 

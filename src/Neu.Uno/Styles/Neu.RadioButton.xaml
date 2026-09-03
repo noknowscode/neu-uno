@@ -1,0 +1,166 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:utu="using:Uno.Toolkit.UI">
+
+  <!--
+    RadioButton. A 21px circular RaisedSm surface; Checked presses it to InsetSm
+    with an 8px amber dot. CornerRadius is 10.5, half the box, because the Skia
+    renderer would turn a 999 radius into an oval.
+
+    The inner Grid carries the same explicit 21x21 as the ShadowContainer. A
+    ShadowContainer with an explicit size and VerticalAlignment="Center" does not
+    stretch its child vertically, and the shadow is drawn around the child, not
+    the container - so an unsized Grid holding only the 8px dot got a 21x8 pill,
+    and the empty unchecked one got 21x0 and drew nothing at all.
+
+    RadioButton splits its state machine into CommonStates and CheckStates.
+    Setters from two groups on the same property do not layer - leaving Pressed
+    would revert Box.Shadows to the base value even while Checked - so only
+    CheckStates touches the box depth. Press feedback is the 0.98 scale alone;
+    the depth inversion arrives with the check, which is the same gesture.
+  -->
+
+  <Style x:Key="NeuRadioButtonStyle" TargetType="RadioButton">
+    <Setter Property="Background" Value="{ThemeResource NeuSurfaceBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource NeuInkBrush}" />
+    <Setter Property="CornerRadius" Value="10.5" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="MinHeight" Value="{ThemeResource NeuTouchTargetMin}" />
+    <Setter Property="MinWidth" Value="0" />
+    <Setter Property="FontSize" Value="{ThemeResource NeuBodyFontSize}" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="HorizontalContentAlignment" Value="Left" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="UseSystemFocusVisuals" Value="False" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="RadioButton">
+          <Grid x:Name="Root"
+                ColumnSpacing="13"
+                Padding="{TemplateBinding Padding}"
+                Background="Transparent">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup x:Name="CommonStates">
+                <VisualStateGroup.Transitions>
+                  <VisualTransition From="Pressed" GeneratedDuration="0:0:0.150">
+                    <Storyboard>
+                      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale"
+                                                     Storyboard.TargetProperty="ScaleX">
+                        <DiscreteDoubleKeyFrame KeyTime="0" Value="{ThemeResource NeuPressScale}" />
+                        <SplineDoubleKeyFrame KeyTime="0:0:0.150" Value="1" KeySpline="{StaticResource NeuEaseSmooth}" />
+                      </DoubleAnimationUsingKeyFrames>
+                      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale"
+                                                     Storyboard.TargetProperty="ScaleY">
+                        <DiscreteDoubleKeyFrame KeyTime="0" Value="{ThemeResource NeuPressScale}" />
+                        <SplineDoubleKeyFrame KeyTime="0:0:0.150" Value="1" KeySpline="{StaticResource NeuEaseSmooth}" />
+                      </DoubleAnimationUsingKeyFrames>
+                    </Storyboard>
+                  </VisualTransition>
+                </VisualStateGroup.Transitions>
+
+                <VisualState x:Name="Normal" />
+
+                <VisualState x:Name="PointerOver">
+                  <VisualState.Setters>
+                    <Setter Target="Box.Background" Value="{ThemeResource NeuSurfaceHoverBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="Pressed">
+                  <Storyboard>
+                    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale"
+                                                   Storyboard.TargetProperty="ScaleX">
+                      <SplineDoubleKeyFrame KeyTime="0:0:0.150" Value="{ThemeResource NeuPressScale}" KeySpline="{StaticResource NeuEaseSmooth}" />
+                    </DoubleAnimationUsingKeyFrames>
+                    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale"
+                                                   Storyboard.TargetProperty="ScaleY">
+                      <SplineDoubleKeyFrame KeyTime="0:0:0.150" Value="{ThemeResource NeuPressScale}" KeySpline="{StaticResource NeuEaseSmooth}" />
+                    </DoubleAnimationUsingKeyFrames>
+                  </Storyboard>
+                </VisualState>
+
+                <VisualState x:Name="Disabled">
+                  <VisualState.Setters>
+                    <Setter Target="Box.Opacity" Value="{ThemeResource NeuInkDisabledOpacity}" />
+                    <Setter Target="ContentPresenter.Opacity" Value="{ThemeResource NeuInkDisabledOpacity}" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+
+              <VisualStateGroup x:Name="CheckStates">
+                <VisualState x:Name="Unchecked" />
+                <VisualState x:Name="Indeterminate" />
+                <VisualState x:Name="Checked">
+                  <VisualState.Setters>
+                    <Setter Target="Box.Shadows" Value="{ThemeResource NeuInsetSm}" />
+                    <Setter Target="Dot.Visibility" Value="Visible" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+
+              <VisualStateGroup x:Name="FocusStates">
+                <VisualState x:Name="Unfocused" />
+                <VisualState x:Name="PointerFocused" />
+                <VisualState x:Name="Focused">
+                  <VisualState.Setters>
+                    <Setter Target="FocusRing.Shadows" Value="{ThemeResource NeuFocusRing}" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+
+            <utu:ShadowContainer x:Name="FocusRing"
+                                 Grid.Column="0"
+                                 Width="21"
+                                 Height="21"
+                                 VerticalAlignment="Center"
+                                 Background="{TemplateBinding Background}"
+                                 CornerRadius="{TemplateBinding CornerRadius}"
+                                 Shadows="{ThemeResource NeuFlat}">
+              <Grid Width="21" Height="21" CornerRadius="{TemplateBinding CornerRadius}" />
+            </utu:ShadowContainer>
+
+            <utu:ShadowContainer x:Name="Box"
+                                 Grid.Column="0"
+                                 Width="21"
+                                 Height="21"
+                                 VerticalAlignment="Center"
+                                 RenderTransformOrigin="0.5,0.5"
+                                 Background="{TemplateBinding Background}"
+                                 CornerRadius="{TemplateBinding CornerRadius}"
+                                 Shadows="{ThemeResource NeuRaisedSm}">
+              <utu:ShadowContainer.RenderTransform>
+                <ScaleTransform x:Name="PressScale" />
+              </utu:ShadowContainer.RenderTransform>
+              <Grid Width="21" Height="21" CornerRadius="{TemplateBinding CornerRadius}">
+                <Ellipse x:Name="Dot"
+                         Width="8"
+                         Height="8"
+                         Fill="{ThemeResource NeuAccentBrush}"
+                         Visibility="Collapsed" />
+              </Grid>
+            </utu:ShadowContainer>
+
+            <ContentPresenter x:Name="ContentPresenter"
+                              Grid.Column="1"
+                              Content="{TemplateBinding Content}"
+                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                              ContentTransitions="{TemplateBinding ContentTransitions}"
+                              Foreground="{TemplateBinding Foreground}"
+                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                              TextWrapping="Wrap"
+                              AutomationProperties.AccessibilityView="Raw" />
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+</ResourceDictionary>

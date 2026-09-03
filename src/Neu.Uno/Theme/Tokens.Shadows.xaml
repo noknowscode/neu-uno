@@ -108,6 +108,30 @@
 
       <!-- Disabled and high contrast: the surface stays, the depth goes. -->
       <utu:ShadowCollection x:Key="NeuFlat" />
+
+      <!--
+        Focus and error rings: the one-shadow exception to "two shadows per
+        collection". A second ShadowContainer behind the surface wears one of
+        these - spread 2, blur 0, no offset - so the ring is a crisp 2px band
+        that follows the control's own corner radius.
+      -->
+      <utu:ShadowCollection x:Key="NeuFocusRing">
+        <utu:Shadow OffsetX="0"
+                    OffsetY="0"
+                    BlurRadius="{StaticResource NeuFocusRingBlur}"
+                    Spread="{StaticResource NeuFocusRingSpread}"
+                    Color="{StaticResource NeuAccent}"
+                    Opacity="1" />
+      </utu:ShadowCollection>
+
+      <utu:ShadowCollection x:Key="NeuAlertRing">
+        <utu:Shadow OffsetX="0"
+                    OffsetY="0"
+                    BlurRadius="{StaticResource NeuFocusRingBlur}"
+                    Spread="{StaticResource NeuFocusRingSpread}"
+                    Color="{StaticResource NeuAlert}"
+                    Opacity="1" />
+      </utu:ShadowCollection>
     </ResourceDictionary>
 
     <ResourceDictionary x:Key="Dark">
@@ -192,6 +216,30 @@
 
       <!-- Disabled and high contrast: the surface stays, the depth goes. -->
       <utu:ShadowCollection x:Key="NeuFlat" />
+
+      <!--
+        Focus and error rings: the one-shadow exception to "two shadows per
+        collection". A second ShadowContainer behind the surface wears one of
+        these - spread 2, blur 0, no offset - so the ring is a crisp 2px band
+        that follows the control's own corner radius.
+      -->
+      <utu:ShadowCollection x:Key="NeuFocusRing">
+        <utu:Shadow OffsetX="0"
+                    OffsetY="0"
+                    BlurRadius="{StaticResource NeuFocusRingBlur}"
+                    Spread="{StaticResource NeuFocusRingSpread}"
+                    Color="{StaticResource NeuAccent}"
+                    Opacity="1" />
+      </utu:ShadowCollection>
+
+      <utu:ShadowCollection x:Key="NeuAlertRing">
+        <utu:Shadow OffsetX="0"
+                    OffsetY="0"
+                    BlurRadius="{StaticResource NeuFocusRingBlur}"
+                    Spread="{StaticResource NeuFocusRingSpread}"
+                    Color="{StaticResource NeuAlert}"
+                    Opacity="1" />
+      </utu:ShadowCollection>
     </ResourceDictionary>
 
     <ResourceDictionary x:Key="Default">
@@ -276,6 +324,30 @@
 
       <!-- Disabled and high contrast: the surface stays, the depth goes. -->
       <utu:ShadowCollection x:Key="NeuFlat" />
+
+      <!--
+        Focus and error rings: the one-shadow exception to "two shadows per
+        collection". A second ShadowContainer behind the surface wears one of
+        these - spread 2, blur 0, no offset - so the ring is a crisp 2px band
+        that follows the control's own corner radius.
+      -->
+      <utu:ShadowCollection x:Key="NeuFocusRing">
+        <utu:Shadow OffsetX="0"
+                    OffsetY="0"
+                    BlurRadius="{StaticResource NeuFocusRingBlur}"
+                    Spread="{StaticResource NeuFocusRingSpread}"
+                    Color="{StaticResource NeuAccent}"
+                    Opacity="1" />
+      </utu:ShadowCollection>
+
+      <utu:ShadowCollection x:Key="NeuAlertRing">
+        <utu:Shadow OffsetX="0"
+                    OffsetY="0"
+                    BlurRadius="{StaticResource NeuFocusRingBlur}"
+                    Spread="{StaticResource NeuFocusRingSpread}"
+                    Color="{StaticResource NeuAlert}"
+                    Opacity="1" />
+      </utu:ShadowCollection>
     </ResourceDictionary>
 
   </ResourceDictionary.ThemeDictionaries>

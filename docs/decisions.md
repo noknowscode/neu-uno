@@ -182,3 +182,47 @@ The dark highlight tops out at 49, not near 255, so the dark collection resolved
 dark theme's `NeuShadowLight` rather than the ambient one. This is the check that would
 catch a `StaticResource` inside a theme dictionary being resolved against the wrong
 theme at parse time, which it is not.
+
+### Step 5 — Button, ToggleButton, CheckBox, RadioButton
+
+**Result: the press signature and the depth-swap states hold on all four controls.**
+Rest, PointerOver, Pressed, Checked, Indeterminate and Disabled render correctly in
+both themes on the desktop head; all four heads build clean. Three findings are
+worth carrying forward.
+
+**1. A ShadowContainer draws its shadow around its CONTENT, not around itself.**
+The shadow follows `PART_ShadowOwner`, which takes the child's natural size. When the
+container has an explicit `Width`/`Height` plus `VerticalAlignment="Center"`, the child
+is *not* stretched to fill it, so the shadow is drawn around whatever the child happens
+to measure. Measured on the RadioButton, whose `Box` is a 21x21 container:
+
+| Radio | Box slot | `PART_ShadowOwner` | Rendered |
+|---|---|---|---|
+| Checked | 21x21 | 21x8 (the dot's height) | a horizontal pill |
+| Unchecked | 21x21 | 21x0 (empty Grid) | nothing at all |
+
+The fix is to repeat the explicit size on the inner Grid, which is what the CheckBox
+already did. **A ShadowContainer with an explicit size needs its child sized to match.**
+The Button and ToggleButton are unaffected because their containers carry no explicit
+size and fill a Grid cell, which does stretch the child.
+
+**2. The focus ring renders; entering the Focused state headlessly does not.**
+The ring anatomy is sound - proved by making `NeuFocusRing` the FocusRing container's
+default shadow and capturing: a crisp 2px amber band appears around every button,
+clearly legible over the Surface's own RaisedMd shadow. So the layering (ring container
+behind an opaque surface), `spread 2 / blur 0`, and the collection all work.
+
+What could not be verified headlessly is the `Focused` VisualState being *entered*.
+Neither `Focus(FocusState.Keyboard)` nor an explicit `GoToState(..., "Focused")` takes:
+Uno's focus manager re-asserts `Unfocused` because the window is never foreground when
+the app is launched from a background session. Two dead ends along the way, recorded so
+they are not retried: `BlurRadius="0"` is *not* the cause (blur 4 renders no differently),
+and the ring is not being buried under the Surface's shadow. **Confirming that a real
+keyboard focus lights the ring is deferred to step 7,** which owns the focus ring layer
+and introduces the controls where focus is the primary state.
+
+**3. `VisualTransition.GeneratedDuration` is Uno0001 not-implemented.**
+It appears as a warning on every template that declares a release transition. It is
+harmless here because each `VisualTransition` supplies an explicit `Storyboard`, which
+does run; `GeneratedDuration` only governs the tween Uno would synthesise in its
+absence. Do not rely on it alone to time a transition.

@@ -1,0 +1,110 @@
+<UserControl x:Class="Neu.Gallery.Views.ControlsSection"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:neu="using:Neu.Uno">
+
+  <!--
+    Step 5 specimens: Button, ToggleButton, CheckBox, RadioButton. One row per
+    control, rest state first, then each state that has a second channel.
+    Md-depth siblings sit 34 apart (offset 6 needs at least 13; 34 lets the
+    Raised shadows breathe past each other).
+
+    Under NEU_GALLERY_STATE=<name> the code-behind forces that VisualState on
+    the specimens tagged for it, so Pressed and Focused can be captured without
+    a pointer.
+  -->
+  <StackPanel Spacing="34">
+
+    <StackPanel Spacing="13">
+      <TextBlock Style="{StaticResource NeuTitle}" Text="Buttons" />
+      <TextBlock Style="{StaticResource NeuBody}"
+                 Foreground="{ThemeResource NeuInkSecondaryBrush}"
+                 Text="Rest is RaisedMd. Press runs Raised, Flat, Inset with a 0.98 scale. One amber fill per view." />
+
+      <StackPanel Orientation="Horizontal" Spacing="34" HorizontalAlignment="Left">
+        <StackPanel Spacing="8">
+          <Button Style="{StaticResource NeuButtonStyle}" Content="Raised" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="Raised" />
+        </StackPanel>
+        <StackPanel Spacing="8">
+          <Button Style="{StaticResource NeuAccentButtonStyle}" Content="Accent" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="Accent" />
+        </StackPanel>
+        <StackPanel Spacing="8">
+          <Button Style="{StaticResource NeuPillButtonStyle}" Content="Pill" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="Pill" />
+        </StackPanel>
+        <StackPanel Spacing="8">
+          <Button x:Name="PressedButton" Style="{StaticResource NeuButtonStyle}" Content="Pressed" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="Pressed" />
+        </StackPanel>
+        <StackPanel Spacing="8">
+          <Button x:Name="FocusedButton" Style="{StaticResource NeuButtonStyle}" Content="Focused" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="Focused" />
+        </StackPanel>
+        <StackPanel Spacing="8">
+          <Button Style="{StaticResource NeuButtonStyle}" Content="Disabled" IsEnabled="False" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="Disabled" />
+        </StackPanel>
+      </StackPanel>
+    </StackPanel>
+
+    <StackPanel Spacing="13">
+      <TextBlock Style="{StaticResource NeuTitle}" Text="Toggles" />
+      <TextBlock Style="{StaticResource NeuBody}"
+                 Foreground="{ThemeResource NeuInkSecondaryBrush}"
+                 Text="Rest is RaisedSm. Checked is InsetSm plus a second channel: amber ink, an amber glyph, an amber dot." />
+
+      <!-- Sm-depth siblings: offset 3, so 21 is generous. -->
+      <StackPanel Orientation="Horizontal" Spacing="21" HorizontalAlignment="Left">
+        <StackPanel Spacing="8">
+          <ToggleButton Style="{StaticResource NeuToggleButtonStyle}" Content="Toggle" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="Unchecked" />
+        </StackPanel>
+        <StackPanel Spacing="8">
+          <ToggleButton Style="{StaticResource NeuToggleButtonStyle}" Content="Toggle" IsChecked="True" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="Checked" />
+        </StackPanel>
+        <StackPanel Spacing="8">
+          <ToggleButton Style="{StaticResource NeuToggleButtonStyle}" Content="Toggle" IsChecked="True" IsEnabled="False" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="Checked, disabled" />
+        </StackPanel>
+      </StackPanel>
+
+      <StackPanel Orientation="Horizontal" Spacing="34" HorizontalAlignment="Left">
+        <StackPanel Spacing="8">
+          <CheckBox Style="{StaticResource NeuCheckBoxStyle}" Content="Unchecked" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="Unchecked" />
+        </StackPanel>
+        <StackPanel Spacing="8">
+          <CheckBox Style="{StaticResource NeuCheckBoxStyle}" Content="Checked" IsChecked="True" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="Checked" />
+        </StackPanel>
+        <StackPanel Spacing="8">
+          <CheckBox Style="{StaticResource NeuCheckBoxStyle}" Content="Indeterminate" IsThreeState="True" IsChecked="{x:Null}" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="Indeterminate" />
+        </StackPanel>
+        <StackPanel Spacing="8">
+          <CheckBox Style="{StaticResource NeuCheckBoxStyle}" Content="Disabled" IsChecked="True" IsEnabled="False" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="Checked, disabled" />
+        </StackPanel>
+      </StackPanel>
+
+      <StackPanel Orientation="Horizontal" Spacing="34" HorizontalAlignment="Left">
+        <StackPanel Spacing="8">
+          <RadioButton Style="{StaticResource NeuRadioButtonStyle}" GroupName="Specimen" Content="One" IsChecked="True" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="Checked" />
+        </StackPanel>
+        <StackPanel Spacing="8">
+          <RadioButton Style="{StaticResource NeuRadioButtonStyle}" GroupName="Specimen" Content="Two" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="Unchecked" />
+        </StackPanel>
+        <StackPanel Spacing="8">
+          <RadioButton Style="{StaticResource NeuRadioButtonStyle}" GroupName="Specimen" Content="Three" IsEnabled="False" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="Disabled" />
+        </StackPanel>
+      </StackPanel>
+    </StackPanel>
+
+  </StackPanel>
+</UserControl>

@@ -1,0 +1,217 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:utu="using:Uno.Toolkit.UI">
+
+  <!--
+    CheckBox. The box is a 21px RaisedSm surface; Checked presses it to InsetSm
+    and draws an amber check - depth plus glyph. Indeterminate is inset with an
+    amber dash. The label is plain ink on the slab; only the box has depth, so
+    the focus ring wraps the box, not the row.
+
+    Press on an unchecked box runs Raised -> Flat -> Inset. The release
+    transitions only fire toward the unchecked rest states; a release that
+    checks the box is already inset.
+  -->
+
+  <Style x:Key="NeuCheckBoxStyle" TargetType="CheckBox">
+    <Setter Property="Background" Value="{ThemeResource NeuSurfaceBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource NeuInkBrush}" />
+    <Setter Property="CornerRadius" Value="{ThemeResource NeuRadiusSm}" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="MinHeight" Value="{ThemeResource NeuTouchTargetMin}" />
+    <Setter Property="MinWidth" Value="0" />
+    <Setter Property="FontSize" Value="{ThemeResource NeuBodyFontSize}" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="HorizontalContentAlignment" Value="Left" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="UseSystemFocusVisuals" Value="False" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="CheckBox">
+          <Grid x:Name="Root"
+                ColumnSpacing="13"
+                Padding="{TemplateBinding Padding}"
+                Background="Transparent">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup x:Name="CombinedStates">
+                <VisualStateGroup.Transitions>
+                  <VisualTransition From="UncheckedPressed" To="UncheckedNormal" GeneratedDuration="0:0:0.150">
+                    <Storyboard>
+                      <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Box"
+                                                     Storyboard.TargetProperty="Shadows">
+                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource NeuFlat}" />
+                        <DiscreteObjectKeyFrame KeyTime="0:0:0.075" Value="{ThemeResource NeuRaisedSm}" />
+                      </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                  </VisualTransition>
+                  <VisualTransition From="UncheckedPressed" To="UncheckedPointerOver" GeneratedDuration="0:0:0.150">
+                    <Storyboard>
+                      <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Box"
+                                                     Storyboard.TargetProperty="Shadows">
+                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource NeuFlat}" />
+                        <DiscreteObjectKeyFrame KeyTime="0:0:0.075" Value="{ThemeResource NeuRaisedSm}" />
+                      </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                  </VisualTransition>
+                </VisualStateGroup.Transitions>
+
+                <VisualState x:Name="UncheckedNormal" />
+
+                <VisualState x:Name="UncheckedPointerOver">
+                  <VisualState.Setters>
+                    <Setter Target="Box.Background" Value="{ThemeResource NeuSurfaceHoverBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="UncheckedPressed">
+                  <Storyboard>
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Box"
+                                                   Storyboard.TargetProperty="Shadows">
+                      <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource NeuFlat}" />
+                      <DiscreteObjectKeyFrame KeyTime="0:0:0.075" Value="{ThemeResource NeuInsetSm}" />
+                    </ObjectAnimationUsingKeyFrames>
+                  </Storyboard>
+                </VisualState>
+
+                <VisualState x:Name="UncheckedDisabled">
+                  <VisualState.Setters>
+                    <Setter Target="Box.Shadows" Value="{ThemeResource NeuFlat}" />
+                    <Setter Target="ContentPresenter.Opacity" Value="{ThemeResource NeuInkDisabledOpacity}" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="CheckedNormal">
+                  <VisualState.Setters>
+                    <Setter Target="Box.Shadows" Value="{ThemeResource NeuInsetSm}" />
+                    <Setter Target="CheckGlyph.Visibility" Value="Visible" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="CheckedPointerOver">
+                  <VisualState.Setters>
+                    <Setter Target="Box.Shadows" Value="{ThemeResource NeuInsetSm}" />
+                    <Setter Target="Box.Background" Value="{ThemeResource NeuSurfaceHoverBrush}" />
+                    <Setter Target="CheckGlyph.Visibility" Value="Visible" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="CheckedPressed">
+                  <VisualState.Setters>
+                    <Setter Target="Box.Shadows" Value="{ThemeResource NeuInsetSm}" />
+                    <Setter Target="CheckGlyph.Visibility" Value="Visible" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="CheckedDisabled">
+                  <VisualState.Setters>
+                    <Setter Target="Box.Shadows" Value="{ThemeResource NeuFlat}" />
+                    <Setter Target="CheckGlyph.Visibility" Value="Visible" />
+                    <Setter Target="CheckGlyph.Opacity" Value="{ThemeResource NeuInkDisabledOpacity}" />
+                    <Setter Target="ContentPresenter.Opacity" Value="{ThemeResource NeuInkDisabledOpacity}" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="IndeterminateNormal">
+                  <VisualState.Setters>
+                    <Setter Target="Box.Shadows" Value="{ThemeResource NeuInsetSm}" />
+                    <Setter Target="IndeterminateGlyph.Visibility" Value="Visible" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="IndeterminatePointerOver">
+                  <VisualState.Setters>
+                    <Setter Target="Box.Shadows" Value="{ThemeResource NeuInsetSm}" />
+                    <Setter Target="Box.Background" Value="{ThemeResource NeuSurfaceHoverBrush}" />
+                    <Setter Target="IndeterminateGlyph.Visibility" Value="Visible" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="IndeterminatePressed">
+                  <VisualState.Setters>
+                    <Setter Target="Box.Shadows" Value="{ThemeResource NeuInsetSm}" />
+                    <Setter Target="IndeterminateGlyph.Visibility" Value="Visible" />
+                  </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="IndeterminateDisabled">
+                  <VisualState.Setters>
+                    <Setter Target="Box.Shadows" Value="{ThemeResource NeuFlat}" />
+                    <Setter Target="IndeterminateGlyph.Visibility" Value="Visible" />
+                    <Setter Target="IndeterminateGlyph.Opacity" Value="{ThemeResource NeuInkDisabledOpacity}" />
+                    <Setter Target="ContentPresenter.Opacity" Value="{ThemeResource NeuInkDisabledOpacity}" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+
+              <VisualStateGroup x:Name="FocusStates">
+                <VisualState x:Name="Unfocused" />
+                <VisualState x:Name="PointerFocused" />
+                <VisualState x:Name="Focused">
+                  <VisualState.Setters>
+                    <Setter Target="FocusRing.Shadows" Value="{ThemeResource NeuFocusRing}" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+
+            <utu:ShadowContainer x:Name="FocusRing"
+                                 Grid.Column="0"
+                                 Width="21"
+                                 Height="21"
+                                 VerticalAlignment="Center"
+                                 Background="{TemplateBinding Background}"
+                                 CornerRadius="{TemplateBinding CornerRadius}"
+                                 Shadows="{ThemeResource NeuFlat}">
+              <Grid Width="21" Height="21" CornerRadius="{TemplateBinding CornerRadius}" />
+            </utu:ShadowContainer>
+
+            <utu:ShadowContainer x:Name="Box"
+                                 Grid.Column="0"
+                                 Width="21"
+                                 Height="21"
+                                 VerticalAlignment="Center"
+                                 Background="{TemplateBinding Background}"
+                                 CornerRadius="{TemplateBinding CornerRadius}"
+                                 Shadows="{ThemeResource NeuRaisedSm}">
+              <Grid Width="21" Height="21" CornerRadius="{TemplateBinding CornerRadius}">
+                <Path x:Name="CheckGlyph"
+                      Data="M5,11 L9,15 L16,6"
+                      Stroke="{ThemeResource NeuAccentBrush}"
+                      StrokeThickness="2"
+                      StrokeStartLineCap="Round"
+                      StrokeEndLineCap="Round"
+                      StrokeLineJoin="Round"
+                      Visibility="Collapsed" />
+                <Rectangle x:Name="IndeterminateGlyph"
+                           Width="9"
+                           Height="2"
+                           RadiusX="1"
+                           RadiusY="1"
+                           Fill="{ThemeResource NeuAccentBrush}"
+                           Visibility="Collapsed" />
+              </Grid>
+            </utu:ShadowContainer>
+
+            <ContentPresenter x:Name="ContentPresenter"
+                              Grid.Column="1"
+                              Content="{TemplateBinding Content}"
+                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                              ContentTransitions="{TemplateBinding ContentTransitions}"
+                              Foreground="{TemplateBinding Foreground}"
+                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                              TextWrapping="Wrap"
+                              AutomationProperties.AccessibilityView="Raw" />
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+</ResourceDictionary>
