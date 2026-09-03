@@ -259,6 +259,6 @@ Each step: build all heads, screenshot, commit.
 
 ## Unresolved Questions
 
-- `Shadow.Color` + `ThemeResource` re-resolution on theme switch (answered in step 3).
+- ~~`Shadow.Color` + `ThemeResource` re-resolution on theme switch.~~ **Answered in step 3:** not the supported path. The `ShadowCollection` itself goes in the theme dictionary, one copy per theme, and consumers bind `{ThemeResource}` to the collection. See D8 and Verification 5 in `docs/decisions.md`.
 - Gallery typefaces beyond the platform-sans + Martian Mono default.
 - Whether the article draft is part of this repo or the blog pipeline.

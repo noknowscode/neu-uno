@@ -39,8 +39,8 @@ swap them with `<Setter Target="Surface.Shadows" .../>`.
 **Tradeoff:** if the Skia swap misbehaves, the `NeuDepth` attached property takes
 over and template authors must use it instead.
 
-**Status:** unverified. The step-4 spike on the desktop head decides this, and its
-outcome is recorded below. Steps 5-9 are gated on it.
+**Status:** verified on the desktop head, step 4. See the spike outcome below.
+`Helpers/NeuDepth.cs` is not needed and the folder stays empty.
 
 ---
 
@@ -110,8 +110,75 @@ templates set half their own height instead. The gallery shows both side by side
 
 ---
 
+## D8 — ShadowCollections are duplicated per theme, not shared with a ThemeResource color
+
+**Decided:** `Tokens.Shadows.xaml` declares all six collections once per theme
+dictionary. Consumers bind `Shadows="{ThemeResource NeuRaisedMd}"`.
+
+**Reason:** this is what the Toolkit documents for theme switching - the
+`ShadowCollection` itself has to live in the theme dictionary. Sharing one collection
+and giving each `Shadow` a `Color="{ThemeResource NeuShadowDark}"` is the obvious
+alternative and is not the supported path. This answers the SPEC's first unresolved
+question without needing to discover it at runtime.
+
+**Tradeoff:** three copies of the same five collections. The numbers and colors are
+`StaticResource` lookups into `Tokens.Metrics.xaml` and `Tokens.Colors.xaml`, so the
+duplication is structural only - no value is written twice.
+
+---
+
+## D9 — NeuGroove carries no shadow
+
+**Decided:** the groove is two 1px borders, shade over highlight, drawn from the shadow
+token colors and their opacities. It is not a `ShadowContainer`.
+
+**Reason:** a blurred inset shadow on a 2px box has nothing to fall across. The scored
+line is the honest primitive for the effect.
+
+**Tradeoff:** the one place in the library where depth is not a named
+`ShadowCollection`, which is a documented exception to CLAUDE.md rule 2 rather than a
+violation of it - it carries no shadow at all.
+
+---
+
 ## Spike outcomes
 
 ### Step 4 — VSM shadow swap on desktop
 
-Not yet run. Records whether D3 holds or `NeuDepth` is required.
+**Result: D3 holds.** A `<Setter Target="Surface.Shadows" Value="{ThemeResource ...}" />`
+inside a `VisualState` applies on the Skia desktop head, both at template time and on a
+state change long after first paint. Toolkit #697 does not reproduce here, as D2 predicted.
+`NeuDepth` as an attached-property fallback is not required; steps 5-9 proceed on the
+VSM swap.
+
+**How it was measured.** `NEU_GALLERY_PRESS=1` flips one `NeuSurface` from `RaisedMd` to
+`InsetSm` on a 1.5s `DispatcherTimer` after `Loaded`, then the window is captured and
+diffed against the same build without the flag:
+
+| Region | Pixels changed | Max delta |
+|---|---|---|
+| Swap specimen | 9,020 | 24 |
+| Control specimen (`Extruded`, never changes) | 0 | - |
+
+A max delta of 24 is shadow magnitude. The first attempt read 202 and looked like a
+failure: the handler also rewrote the caption, the wider caption widened the
+`StackPanel`, and the centered fixed-width specimen shifted - so the diff was measuring
+layout, not depth. **A before/after pixel diff of a depth change is only valid if
+nothing else on the row can move.** The specimen is now `HorizontalAlignment="Left"`
+with a fixed caption.
+
+### Verification 5 — theme switch re-resolves the shadow colors
+
+**Result: it works, via per-theme collections (D8), not via a `ThemeResource` color.**
+Measured on the depth specimens, sampling the brightest pixel in the top-left highlight
+band of `NeuRaisedLg`:
+
+| Theme | Canvas | Brightest highlight | Darkest shade |
+|---|---|---|---|
+| Light | 233 | 242 (toward `#FFFFFF`) | 219 (toward `#B9AFA4`) |
+| Dark | 44 | 49 (toward `#3D3B38`) | 36 (toward `#151412`) |
+
+The dark highlight tops out at 49, not near 255, so the dark collection resolved the
+dark theme's `NeuShadowLight` rather than the ambient one. This is the check that would
+catch a `StaticResource` inside a theme dictionary being resolved against the wrong
+theme at parse time, which it is not.
