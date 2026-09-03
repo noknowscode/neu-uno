@@ -1,0 +1,21 @@
+<Page x:Class="Neu.Gallery.MainPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="using:Neu.Gallery"
+      xmlns:utu="using:Uno.Toolkit.UI"
+      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+  <!--
+    Step 1: one plain page, no tokens and no depth yet. The specimen-sheet
+    composition (loose left-aligned grid, groove dividers, ink captions)
+    arrives with the tokens in step 2 and the primitives in step 3.
+  -->
+  <ScrollViewer IsTabStop="True">
+    <Grid utu:SafeArea.Insets="VisibleBounds">
+      <TextBlock AutomationProperties.AutomationId="GalleryTitle"
+                 Text="Neu &#183; Specimens"
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Center" />
+    </Grid>
+  </ScrollViewer>
+</Page>

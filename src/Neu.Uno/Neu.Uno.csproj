@@ -1,0 +1,38 @@
+<Project Sdk="Uno.Sdk">
+  <PropertyGroup>
+    <!-- Skia-only heads. No WinAppSDK head: see docs/decisions.md. -->
+    <TargetFrameworks>net10.0-desktop;net10.0-browserwasm;net10.0-android;net10.0-ios</TargetFrameworks>
+    <UnoSingleProject>true</UnoSingleProject>
+    <OutputType>Library</OutputType>
+
+    <!-- Ensures the .xr.xml files are generated in a proper layout folder -->
+    <GenerateLibraryLayout>true</GenerateLibraryLayout>
+
+    <RootNamespace>Neu.Uno</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <!-- Convention 11: AOT/trim clean. -->
+    <IsAotCompatible>true</IsAotCompatible>
+    <IsTrimmable>true</IsTrimmable>
+
+    <!--
+      Toolkit brings Uno.Toolkit.Skia.WinUI (ShadowContainer), the single
+      approved dependency. Version is resolved by the Uno.Sdk pinned in
+      global.json so the managed build matches the tested pairing.
+    -->
+    <UnoFeatures>
+      Toolkit;
+      Skia;
+      SkiaRenderer;
+    </UnoFeatures>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <PackageId>Neu.Uno</PackageId>
+    <Version>0.1.0-alpha</Version>
+    <Description>Neumorphism theme for Uno Platform: tokens, a depth scale, and retemplated WinUI controls. Skia heads only.</Description>
+    <PackageTags>uno-platform;uno;winui;xaml;theme;neumorphism;skia</PackageTags>
+  </PropertyGroup>
+</Project>

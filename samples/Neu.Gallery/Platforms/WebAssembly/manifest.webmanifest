@@ -1,0 +1,10 @@
+{
+  "background_color": "#ffffff",
+  "description": "Neu.Gallery",
+  "display": "standalone",
+  "name": "Neu.Gallery",
+  "short_name": "Neu.Gallery",
+  "start_url": "/index.html",
+  "theme_color": "#ffffff",
+  "scope": "/"
+}
