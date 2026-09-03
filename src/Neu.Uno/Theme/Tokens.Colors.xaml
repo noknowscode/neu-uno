@@ -13,8 +13,14 @@
     *Opacity doubles because utu:Shadow takes Color and Opacity separately.
 
     NeuOnAccent / NeuOnAlert are the ink that sits on top of the amber and red
-    fills. Both are the light-theme dark ink in BOTH themes: light ink on the dark
-    accent measures 1.83:1 and is unusable. See tools/contrast-check.ps1.
+    fills. NeuOnAccent is the dark ink in BOTH themes: light ink on the dark-theme
+    amber measures 1.83:1 and is unusable. NeuOnAlert does flip, because the reds
+    land on opposite sides of the ink: light-theme #A64134 takes light ink at
+    4.99:1, dark-theme #E5786A takes dark ink at 5.68:1.
+
+    NeuAlert is one step darker (light) and one step brighter (dark) than the
+    Design Brief table. The tabled reds measured 4.14:1 and 4.09:1 as message ink
+    on the canvas, under the 4.5:1 floor. See tools/contrast-check.ps1.
 
     "Default" mirrors "Light" so a HighContrast request resolves instead of
     throwing. Step 9 replaces it with the real NeuHighContrast dictionary.
@@ -30,9 +36,9 @@
       <Color x:Key="NeuInk">#1F1F1E</Color>
       <Color x:Key="NeuInkSecondary">#5F5A55</Color>
       <Color x:Key="NeuAccent">#C99436</Color>
-      <Color x:Key="NeuAlert">#B5493A</Color>
+      <Color x:Key="NeuAlert">#A64134</Color>
       <Color x:Key="NeuOnAccent">#1F1F1E</Color>
-      <Color x:Key="NeuOnAlert">#1F1F1E</Color>
+      <Color x:Key="NeuOnAlert">#ECE7E1</Color>
 
       <x:Double x:Key="NeuShadowLightOpacity">0.72</x:Double>
       <x:Double x:Key="NeuShadowDarkOpacity">0.55</x:Double>
@@ -42,9 +48,9 @@
       <SolidColorBrush x:Key="NeuInkBrush" Color="#1F1F1E" />
       <SolidColorBrush x:Key="NeuInkSecondaryBrush" Color="#5F5A55" />
       <SolidColorBrush x:Key="NeuAccentBrush" Color="#C99436" />
-      <SolidColorBrush x:Key="NeuAlertBrush" Color="#B5493A" />
+      <SolidColorBrush x:Key="NeuAlertBrush" Color="#A64134" />
       <SolidColorBrush x:Key="NeuOnAccentBrush" Color="#1F1F1E" />
-      <SolidColorBrush x:Key="NeuOnAlertBrush" Color="#1F1F1E" />
+      <SolidColorBrush x:Key="NeuOnAlertBrush" Color="#ECE7E1" />
     </ResourceDictionary>
 
     <ResourceDictionary x:Key="Dark">
@@ -55,7 +61,7 @@
       <Color x:Key="NeuInk">#ECE7E1</Color>
       <Color x:Key="NeuInkSecondary">#A39D96</Color>
       <Color x:Key="NeuAccent">#D9A441</Color>
-      <Color x:Key="NeuAlert">#D9685A</Color>
+      <Color x:Key="NeuAlert">#E5786A</Color>
       <Color x:Key="NeuOnAccent">#1F1F1E</Color>
       <Color x:Key="NeuOnAlert">#1F1F1E</Color>
 
@@ -67,7 +73,7 @@
       <SolidColorBrush x:Key="NeuInkBrush" Color="#ECE7E1" />
       <SolidColorBrush x:Key="NeuInkSecondaryBrush" Color="#A39D96" />
       <SolidColorBrush x:Key="NeuAccentBrush" Color="#D9A441" />
-      <SolidColorBrush x:Key="NeuAlertBrush" Color="#D9685A" />
+      <SolidColorBrush x:Key="NeuAlertBrush" Color="#E5786A" />
       <SolidColorBrush x:Key="NeuOnAccentBrush" Color="#1F1F1E" />
       <SolidColorBrush x:Key="NeuOnAlertBrush" Color="#1F1F1E" />
     </ResourceDictionary>
@@ -80,9 +86,9 @@
       <Color x:Key="NeuInk">#1F1F1E</Color>
       <Color x:Key="NeuInkSecondary">#5F5A55</Color>
       <Color x:Key="NeuAccent">#C99436</Color>
-      <Color x:Key="NeuAlert">#B5493A</Color>
+      <Color x:Key="NeuAlert">#A64134</Color>
       <Color x:Key="NeuOnAccent">#1F1F1E</Color>
-      <Color x:Key="NeuOnAlert">#1F1F1E</Color>
+      <Color x:Key="NeuOnAlert">#ECE7E1</Color>
 
       <x:Double x:Key="NeuShadowLightOpacity">0.72</x:Double>
       <x:Double x:Key="NeuShadowDarkOpacity">0.55</x:Double>
@@ -92,9 +98,9 @@
       <SolidColorBrush x:Key="NeuInkBrush" Color="#1F1F1E" />
       <SolidColorBrush x:Key="NeuInkSecondaryBrush" Color="#5F5A55" />
       <SolidColorBrush x:Key="NeuAccentBrush" Color="#C99436" />
-      <SolidColorBrush x:Key="NeuAlertBrush" Color="#B5493A" />
+      <SolidColorBrush x:Key="NeuAlertBrush" Color="#A64134" />
       <SolidColorBrush x:Key="NeuOnAccentBrush" Color="#1F1F1E" />
-      <SolidColorBrush x:Key="NeuOnAlertBrush" Color="#1F1F1E" />
+      <SolidColorBrush x:Key="NeuOnAlertBrush" Color="#ECE7E1" />
     </ResourceDictionary>
 
   </ResourceDictionary.ThemeDictionaries>

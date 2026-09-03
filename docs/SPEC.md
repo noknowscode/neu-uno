@@ -125,9 +125,13 @@ The default neumorphism cluster is cool grey `#E0E5EC`, saturated blue accent, e
 | `NeuInk` | `#1F1F1E` | `#ECE7E1` | text, glyphs |
 | `NeuInkSecondary` | `#5F5A55` | `#A39D96` | captions, hints |
 | `NeuAccent` | `#C99436` | `#D9A441` | one filled action per view; checked/selected marker |
-| `NeuAlert` | `#B5493A` | `#D9685A` | semantic only |
+| `NeuAlert` | `#A64134` | `#E5786A` | semantic only |
+| `NeuOnAccent` | `#1F1F1E` | `#1F1F1E` | ink on the amber fill; does not flip |
+| `NeuOnAlert` | `#ECE7E1` | `#1F1F1E` | ink on the red fill |
 
-Contrast floors: `NeuInk` on `NeuSurface` ≥ 7:1 light, ≥ 10:1 dark; `NeuInkSecondary` ≥ 4.5:1; accent is a fill under ink text, never text itself.
+Contrast floors: `NeuInk` on `NeuSurface` ≥ 7:1 light, ≥ 10:1 dark; `NeuInkSecondary` ≥ 4.5:1; accent is a fill under ink text, never text itself. `NeuAlert` is message ink as well as a ring color, so it owes 4.5:1 on the canvas too.
+
+The `NeuAlert` values and the two `NeuOn*` tokens are amendments to the original brief, made in step 2 to clear those floors. Rationale in `docs/decisions.md` (D6, D7); `tools/contrast-check.ps1` is the check.
 
 ### Depth scale
 

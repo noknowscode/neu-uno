@@ -68,40 +68,36 @@ rather than a guarantee.
 
 ## D6 — NeuOnAccent / NeuOnAlert carry the ink that sits on a fill
 
-**Decided:** two tokens beyond the Design Brief table, both `#1F1F1E` in *both* themes.
+**Decided:** two tokens beyond the Design Brief table, naming the ink that goes on
+top of a fill. `NeuOnAccent` is `#1F1F1E` in *both* themes; `NeuOnAlert` flips
+normally (`#ECE7E1` light, `#1F1F1E` dark).
 
 **Reason:** the amber fill is nearly as light in dark theme as in light. Dark-theme
 `NeuInk` (`#ECE7E1`) on dark-theme `NeuAccent` (`#D9A441`) measures **1.83:1**, so
-"ink on the accent fill" cannot mean the theme's own ink. Fixing the on-fill ink at
-the light-theme dark ink gives 6.11:1 (light) and 7.33:1 (dark).
+"ink on the accent fill" cannot mean the theme's own ink. Pinning it dark gives
+6.11:1 (light) and 7.33:1 (dark). The two reds land on opposite sides of the ink,
+so `NeuOnAlert` needs no such exception: 4.99:1 light, 5.68:1 dark.
 
-**Tradeoff:** one token pair that does not flip with the theme, which reads as an
+**Tradeoff:** `NeuOnAccent` does not flip with the theme, which reads as an
 exception in `Tokens.Colors.xaml` and is commented as such.
 
 ---
 
-## Open — three token pairs are below their contrast floor
+## D7 — NeuAlert is one step off the Design Brief table
 
-`tools/contrast-check.ps1` exits 1 on the step-2 tokens. All three failures involve
-`NeuAlert`, and fixing any of them means changing a value in `Tokens.Colors.xaml`,
-which is a Stop Check. Recorded here, not fixed:
+**Decided:** `NeuAlert` is `#A64134` light (was `#B5493A`) and `#E5786A` dark
+(was `#D9685A`).
 
-| Theme | Pair | Ratio | Floor |
-|---|---|---|---|
-| Light | `NeuAlert` on `NeuSurface` | 4.14:1 | 4.5 |
-| Dark  | `NeuAlert` on `NeuSurface` | 4.09:1 | 4.5 |
-| Light | `NeuOnAlert` on `NeuAlert` | 3.13:1 | 4.5 |
+**Reason:** the Interaction Brief puts input error messages in `NeuAlert` ink on the
+canvas, so the token is text and owes 4.5:1. The tabled reds measured **4.14:1** and
+**4.09:1**. The replacements measure 4.81:1 and 4.87:1, keeping the hue and moving
+only lightness — darker in light theme, brighter in dark.
 
-The first two matter: the Interaction Brief puts the input error message in `NeuAlert`
-ink on the canvas, so `NeuAlert` is used as text and owes 4.5:1. Both themes need the
-red about one step darker (light) and one step deeper (dark).
+**Tradeoff:** the palette no longer matches the `docs/SPEC.md` Design Brief table
+verbatim; this entry is the reconciliation. It also changed which ink sits on the
+red, which is why `NeuOnAlert` flips by theme (see D6).
 
-The third only matters if `NeuAlert` is ever used as a *fill* under text. It is
-"semantic only" in the brief — ring color and message ink — so the pairing may simply
-be forbidden instead of fixed. Light `NeuAlert` fails with either ink (3.13:1 with dark,
-4.29:1 with light), so no choice of `NeuOnAlert` rescues it at the current red.
-
-Decide before step 7, which is the first step that renders an error state.
+`tools/contrast-check.ps1` now exits 0 on every enforced floor, both themes.
 
 ---
 
