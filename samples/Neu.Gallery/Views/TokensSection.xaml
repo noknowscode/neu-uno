@@ -1,0 +1,194 @@
+<UserControl x:Class="Neu.Gallery.Views.TokensSection"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:Neu.Gallery.Views">
+
+  <!--
+    Token specimens. One continuous slab, specimens left-aligned, an ink caption
+    under each. No depth yet: the ShadowCollections and the primitives that would
+    carry them arrive in step 3, so every specimen here is flat on purpose.
+  -->
+  <StackPanel Spacing="34">
+
+    <!-- Color -->
+    <StackPanel Spacing="13">
+      <TextBlock Style="{StaticResource NeuTitle}" Text="Color" />
+      <TextBlock Style="{StaticResource NeuBody}"
+                 Foreground="{ThemeResource NeuInkSecondaryBrush}"
+                 Text="Hex and contrast are read from the live theme dictionary, so they follow the toggle." />
+
+      <ItemsControl x:Name="ColorSwatches" HorizontalAlignment="Left">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <StackPanel Spacing="8" />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="local:TokenSwatch">
+            <Grid ColumnSpacing="13">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="188" />
+                <ColumnDefinition Width="88" />
+                <ColumnDefinition Width="*" />
+              </Grid.ColumnDefinitions>
+
+              <Border Grid.Column="0"
+                      Width="55"
+                      Height="34"
+                      Background="{x:Bind Fill}"
+                      BorderThickness="1"
+                      BorderBrush="{ThemeResource NeuInkSecondaryBrush}"
+                      CornerRadius="{StaticResource NeuRadiusSm}" />
+
+              <TextBlock Grid.Column="1"
+                         VerticalAlignment="Center"
+                         Style="{StaticResource NeuBody}"
+                         Text="{x:Bind Name}" />
+
+              <TextBlock Grid.Column="2"
+                         VerticalAlignment="Center"
+                         Style="{StaticResource NeuData}"
+                         Text="{x:Bind Hex}" />
+
+              <TextBlock Grid.Column="3"
+                         VerticalAlignment="Center"
+                         Style="{StaticResource NeuData}"
+                         Foreground="{x:Bind NoteBrush}"
+                         Text="{x:Bind Note}" />
+            </Grid>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </StackPanel>
+
+    <!-- Depth scale numbers. The collections themselves land in step 3. -->
+    <StackPanel Spacing="13">
+      <TextBlock Style="{StaticResource NeuTitle}" Text="Depth" />
+      <TextBlock Style="{StaticResource NeuBody}"
+                 Foreground="{ThemeResource NeuInkSecondaryBrush}"
+                 Text="Metric tokens only. The ShadowCollections that consume them arrive in step 3." />
+
+      <ItemsControl x:Name="DepthRows" HorizontalAlignment="Left">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <StackPanel Spacing="5" />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="local:MetricRow">
+            <Grid ColumnSpacing="13">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="188" />
+                <ColumnDefinition Width="*" />
+              </Grid.ColumnDefinitions>
+              <TextBlock Grid.Column="0" Style="{StaticResource NeuBody}" Text="{x:Bind Name}" />
+              <TextBlock Grid.Column="1" Style="{StaticResource NeuData}" Text="{x:Bind Value}" />
+            </Grid>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </StackPanel>
+
+    <!-- Radius -->
+    <StackPanel Spacing="13">
+      <TextBlock Style="{StaticResource NeuTitle}" Text="Radius" />
+      <StackPanel Orientation="Horizontal" Spacing="21" HorizontalAlignment="Left">
+        <StackPanel Spacing="5">
+          <Border Width="89" Height="55"
+                  Background="{ThemeResource NeuInkSecondaryBrush}"
+                  CornerRadius="{StaticResource NeuRadiusSm}" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="NeuRadiusSm 8" />
+        </StackPanel>
+        <StackPanel Spacing="5">
+          <Border Width="89" Height="55"
+                  Background="{ThemeResource NeuInkSecondaryBrush}"
+                  CornerRadius="{StaticResource NeuRadiusMd}" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="NeuRadiusMd 13" />
+        </StackPanel>
+        <StackPanel Spacing="5">
+          <Border Width="89" Height="55"
+                  Background="{ThemeResource NeuInkSecondaryBrush}"
+                  CornerRadius="{StaticResource NeuRadiusLg}" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="NeuRadiusLg 21" />
+        </StackPanel>
+        <StackPanel Spacing="5">
+          <Border Width="89" Height="55"
+                  Background="{ThemeResource NeuInkSecondaryBrush}"
+                  CornerRadius="{StaticResource NeuRadiusPill}" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="NeuRadiusPill 999 &#183; oval on Skia" />
+        </StackPanel>
+        <StackPanel Spacing="5">
+          <Border Width="89" Height="55"
+                  Background="{ThemeResource NeuInkSecondaryBrush}"
+                  CornerRadius="27.5" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="half height 27.5 &#183; true pill" />
+        </StackPanel>
+      </StackPanel>
+    </StackPanel>
+
+    <!-- Spacing -->
+    <StackPanel Spacing="13">
+      <TextBlock Style="{StaticResource NeuTitle}" Text="Spacing" />
+      <TextBlock Style="{StaticResource NeuBody}"
+                 Foreground="{ThemeResource NeuInkSecondaryBrush}"
+                 Text="Fibonacci. Shadow offset stays under the gap between sibling containers, so Md depth needs NeuSpace13." />
+      <ItemsControl x:Name="SpacingBars" HorizontalAlignment="Left">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <StackPanel Spacing="5" />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="local:MetricRow">
+            <Grid ColumnSpacing="13">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="110" />
+                <ColumnDefinition Width="Auto" />
+              </Grid.ColumnDefinitions>
+              <TextBlock Grid.Column="0" VerticalAlignment="Center"
+                         Style="{StaticResource NeuData}" Text="{x:Bind Name}" />
+              <Border Grid.Column="1"
+                      Width="{x:Bind Size}"
+                      Height="13"
+                      HorizontalAlignment="Left"
+                      Background="{ThemeResource NeuAccentBrush}" />
+            </Grid>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </StackPanel>
+
+    <!-- Type -->
+    <StackPanel Spacing="13">
+      <TextBlock Style="{StaticResource NeuTitle}" Text="Type" />
+      <TextBlock Style="{StaticResource NeuBody}"
+                 Foreground="{ThemeResource NeuInkSecondaryBrush}"
+                 Text="Ramp only. The library ships no fonts; these render in whatever face the app supplies." />
+
+      <StackPanel Spacing="13">
+        <StackPanel Spacing="3">
+          <TextBlock Style="{StaticResource NeuDisplay}" Text="Display" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="NeuDisplay &#183; 34/40 &#183; SemiBold" />
+        </StackPanel>
+        <StackPanel Spacing="3">
+          <TextBlock Style="{StaticResource NeuTitle}" Text="Title" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="NeuTitle &#183; 21/28 &#183; SemiBold" />
+        </StackPanel>
+        <StackPanel Spacing="3">
+          <TextBlock Style="{StaticResource NeuBody}" Text="Body. One molded slab; depth carries the meaning." />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="NeuBody &#183; 16/24 &#183; Normal" />
+        </StackPanel>
+        <StackPanel Spacing="3">
+          <TextBlock Style="{StaticResource NeuLabel}" Text="LABEL" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="NeuLabel &#183; 13/16 &#183; Medium &#183; tracking 30, inert on Skia" />
+        </StackPanel>
+        <StackPanel Spacing="3">
+          <TextBlock Style="{StaticResource NeuData}" Text="0123456789 &#183; #E9E3DC &#183; 12.95:1" />
+          <TextBlock Style="{StaticResource NeuLabel}" Text="NeuData &#183; 13/16 &#183; Normal &#183; mono when the app supplies one" />
+        </StackPanel>
+      </StackPanel>
+    </StackPanel>
+
+  </StackPanel>
+</UserControl>

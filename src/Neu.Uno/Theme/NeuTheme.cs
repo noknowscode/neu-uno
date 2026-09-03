@@ -1,3 +1,4 @@
+using System;
 using Microsoft.UI.Xaml;
 
 namespace Neu.Uno;
@@ -16,20 +17,47 @@ namespace Neu.Uno;
 /// </code>
 /// </summary>
 /// <remarks>
-/// Step 1 scaffold: this dictionary is intentionally empty. Tokens land in
-/// step 2, depth collections in step 3, control styles from step 5 on. The
-/// two properties below are declared now so consumer markup written against
-/// them does not have to change later.
+/// As of step 2 this merges the color, metric/radius/spacing and type tokens.
+/// Depth collections land in step 3 and control styles from step 5 on.
 /// </remarks>
 public partial class NeuTheme : ResourceDictionary
 {
+    private const string TokensColors = "ms-appx:///Neu.Uno/Theme/Tokens.Colors.xaml";
+    private const string TokensMetrics = "ms-appx:///Neu.Uno/Theme/Tokens.Metrics.xaml";
+    private const string TokensType = "ms-appx:///Neu.Uno/Theme/Tokens.Type.xaml";
+
+    private Uri? _colorOverrideSource;
+    private ResourceDictionary? _colorOverrides;
+
     /// <summary>
     /// Optional dictionary of color token overrides, merged after the Neu
     /// defaults so a consumer can restate any <c>Neu*</c> color without
-    /// forking the theme.
+    /// forking the theme. Give it the same <c>ThemeDictionaries</c> shape as
+    /// <c>Tokens.Colors.xaml</c> and restate only the keys you are changing.
     /// </summary>
-    /// <remarks>Honoured from step 2, once there are tokens to override.</remarks>
-    public Uri? ColorOverrideSource { get; set; }
+    public Uri? ColorOverrideSource
+    {
+        get => _colorOverrideSource;
+        set
+        {
+            _colorOverrideSource = value;
+
+            if (_colorOverrides is not null)
+            {
+                MergedDictionaries.Remove(_colorOverrides);
+                _colorOverrides = null;
+            }
+
+            if (value is not null)
+            {
+                // Appended last so overrides win over the defaults merged in the
+                // constructor. XAML sets properties after construction, so this
+                // ordering holds for markup use.
+                _colorOverrides = new ResourceDictionary { Source = value };
+                MergedDictionaries.Add(_colorOverrides);
+            }
+        }
+    }
 
     /// <summary>
     /// When <c>true</c>, also merges the implicit-style dictionary so stock
@@ -40,7 +68,11 @@ public partial class NeuTheme : ResourceDictionary
 
     public NeuTheme()
     {
-        // Step 2 merges Tokens.Colors/Metrics/Type here, step 3 Tokens.Shadows,
-        // step 9 the implicit styles gated on UseImplicitStyles.
+        MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(TokensColors) });
+        MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(TokensMetrics) });
+        MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(TokensType) });
+
+        // Step 3 merges Tokens.Shadows.xaml here; step 9 the implicit styles,
+        // gated on UseImplicitStyles.
     }
 }

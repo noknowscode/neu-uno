@@ -2,20 +2,54 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:local="using:Neu.Gallery"
-      xmlns:utu="using:Uno.Toolkit.UI"
-      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+      xmlns:views="using:Neu.Gallery.Views"
+      xmlns:utu="using:Uno.Toolkit.UI">
 
   <!--
-    Step 1: one plain page, no tokens and no depth yet. The specimen-sheet
-    composition (loose left-aligned grid, groove dividers, ink captions)
-    arrives with the tokens in step 2 and the primitives in step 3.
+    The specimen sheet: one continuous slab, one flat scroll, sections divided by
+    a groove. Step 2 has a single section, so there is no jump list yet; it
+    arrives with the second section.
+
+    The theme toggle is a stock WinUI Button on purpose - Neu control styles do
+    not exist until step 5, and a Fluent button next to Neu tokens makes that
+    obvious rather than hiding it.
   -->
-  <ScrollViewer IsTabStop="True">
-    <Grid utu:SafeArea.Insets="VisibleBounds">
-      <TextBlock AutomationProperties.AutomationId="GalleryTitle"
-                 Text="Neu &#183; Specimens"
-                 HorizontalAlignment="Center"
-                 VerticalAlignment="Center" />
-    </Grid>
-  </ScrollViewer>
+  <Grid x:Name="Root" Background="{ThemeResource NeuCanvasBrush}">
+    <ScrollViewer x:Name="Sheet" IsTabStop="True">
+      <Grid utu:SafeArea.Insets="VisibleBounds" Padding="34">
+        <StackPanel Spacing="21" MaxWidth="960" HorizontalAlignment="Left">
+
+          <Grid ColumnSpacing="21">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*" />
+              <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0" Spacing="3">
+              <TextBlock AutomationProperties.AutomationId="GalleryTitle"
+                         Style="{StaticResource NeuDisplay}"
+                         Text="Neu &#183; Tokens" />
+              <TextBlock Style="{StaticResource NeuLabel}"
+                         Text="COLOR &#183; DEPTH &#183; RADIUS &#183; SPACING &#183; TYPE" />
+            </StackPanel>
+
+            <Button Grid.Column="1"
+                    x:Name="ThemeToggle"
+                    VerticalAlignment="Top"
+                    AutomationProperties.AutomationId="ThemeToggle"
+                    Content="Dark"
+                    Click="OnToggleTheme" />
+          </Grid>
+
+          <!-- Placeholder for the NeuGroove primitive, which lands in step 3. -->
+          <Border Height="1"
+                  Opacity="0.25"
+                  Background="{ThemeResource NeuInkSecondaryBrush}" />
+
+          <views:TokensSection />
+
+        </StackPanel>
+      </Grid>
+    </ScrollViewer>
+  </Grid>
 </Page>
