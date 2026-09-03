@@ -19,18 +19,21 @@
     just under a third. The dash starts at 3 o'clock, hence the -90 rotation.
 
     Two arcs rather than one, because indeterminate wants a fixed dash and
-    determinate wants a bound one; sharing an element would put a VisualState
-    setter and a binding on the same property.
+    determinate a driven one; sharing an element would put a VisualState setter
+    and a binding on the same property.
+
+    The determinate arc is driven by the NeuProgressArc attached property rather
+    than by a value converter. A converter sees only the one value it is bound
+    to, so it had to be told the ring's range up front and assumed the control's
+    default 0-100 - which silently drew the wrong arc for any app that set its
+    own range, and could not be corrected from outside the template. The attached
+    property reads Minimum and Maximum off the ring.
 
     Perf: the spin repeats forever, which holds the Skia compositor at display
     refresh - roughly a third of a core - and keeps costing even while the ring
     is Collapsed. It is scoped to the Active state, so going Inactive stops it.
     Set IsActive="False" rather than hiding a spinning ring.
   -->
-
-  <neu:NeuProgressArcConverter x:Key="NeuProgressArc"
-                               Diameter="48"
-                               StrokeThickness="5" />
 
   <Style x:Key="NeuProgressRingStyle" TargetType="ProgressRing">
     <Setter Property="Background" Value="{ThemeResource NeuSurfaceBrush}" />
@@ -99,14 +102,20 @@
               </Ellipse.RenderTransform>
             </Ellipse>
 
+            <!--
+              Flat dash cap, unlike the indeterminate arc above. A round cap on a
+              zero-length dash paints a full-stroke dot, so an active ring at
+              Value=0 showed roughly two percent of progress that did not exist.
+              A flat cap has no extent at zero and draws nothing.
+            -->
             <Ellipse x:Name="DeterminateArc"
                      Width="43"
                      Height="43"
                      RenderTransformOrigin="0.5,0.5"
                      Stroke="{TemplateBinding Foreground}"
                      StrokeThickness="5"
-                     StrokeDashCap="Round"
-                     StrokeDashArray="{Binding Value, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource NeuProgressArc}}"
+                     StrokeDashCap="Flat"
+                     neu:NeuProgressArc.Source="{Binding RelativeSource={RelativeSource TemplatedParent}}"
                      Visibility="Collapsed">
               <Ellipse.RenderTransform>
                 <RotateTransform Angle="-90" />

@@ -199,6 +199,32 @@ behavior on this stack and would have shipped unverified.
 
 ---
 
+## D12 - The determinate ring is driven by an attached property, not a converter
+
+**Decided:** `Helpers/NeuProgressArc.cs` is an attached property that writes a
+shape's `StrokeDashArray` from a `ProgressRing`'s own `Minimum`, `Maximum` and
+`Value`. `NeuProgressArcConverter` is deleted.
+
+**Reason:** a converter sees one value. It could not know the ring's range, so it
+was given `Minimum`/`Maximum` properties defaulting to the control's own 0-100 -
+and any app that set a different range got an arc scaled by the difference, with
+no error. `Maximum="1"`, the natural choice for a fraction, drew nothing. The
+consumer could not fix it either: the converter instance lived inside the
+library's own template as a keyed resource, so correcting it meant retemplating
+the control. The attached property reads the range off the ring and re-reads it
+whenever any of the three change.
+
+**Tradeoff:** a public static class with an attached property instead of a
+converter, and a subscription per ring rather than a pure function. It also takes
+its geometry from the shape it is attached to - `Width` and `StrokeThickness` -
+which removes the second footgun in the converter's docs, that a resized ring
+needed its geometry restated by hand.
+
+Found by building an app against the library rather than by reading it. See
+Verification 6.
+
+---
+
 ## Spike outcomes
 
 ### Step 4 — VSM shadow swap on desktop
@@ -596,3 +622,71 @@ signature is visible in the hero shot. `NEU_GALLERY_FOCUS` is deliberately *not*
 set for them: it rewrites the caption under the focused specimen to
 `Focus()=True state=Keyboard`, which is verification instrumentation and has no
 business in a README.
+
+### Verification 6 - an external consumer app
+
+**A separate app outside this repo, `../steep`, scaffolded with
+`dotnet new unoapp -preset blank`, referencing `Neu.Uno` by project and following
+`README.md` verbatim.** A tea timer: header, two surfaces, ComboBox, Slider,
+ProgressBar, ProgressRing, two buttons, a ListView and a ContentDialog. Almost no
+control carries a `Style` - the app sets `UseImplicitStyles="True"` - so it also
+tests the step 9 path from the outside.
+
+**Result: the theme works from outside, and consuming it found two library bugs
+and two documentation bugs that the gallery could not.** The gallery is inside the
+repo and shares its `global.json`, its solution and its habits; it turns out that
+hides things.
+
+**1. The determinate ProgressRing assumed a 0-100 range.** The app's ring is
+`Minimum="0" Maximum="1"` because it shows a fraction. It drew nothing at 70%.
+The value converter had been told the range up front and defaulted to 0-100, so
+it computed 0.7% and drew a hairline. Fixed by D12. Confirmed both ways: with
+`Maximum="100"` the same app drew the arc correctly, and after the fix the 0-1
+ring draws 70% correctly.
+
+**Why the gallery missed it.** Its ring specimens are "Indeterminate",
+"Determinate 65" and "Inactive", all on the control's default range. A specimen
+sheet naturally uses defaults; an app naturally does not.
+
+**2. A ring at its minimum drew a dot.** `StrokeDashCap="Round"` on a zero-length
+dash paints a full-stroke dot, so an active ring at 0 showed about two percent of
+progress that did not exist. The determinate arc is now `Flat`, which has no
+extent at zero. The indeterminate arc keeps `Round` - its dash is never zero.
+
+**Why the gallery missed it too.** Its only zero-progress specimen is *inactive*,
+and the inactive state hides the arc outright. An active ring sitting at zero -
+what every timer shows before you start it - was never on the sheet.
+
+**3. `docs/overrides.md` gave the wrong `ms-appx` URI for a consumer's own
+dictionary.** It showed `ms-appx:///MyApp/Theme/Palette.xaml`. The
+assembly-qualified form is for dictionaries in a *library*; an app's own
+dictionary is `ms-appx:///Theme/Palette.xaml`. The wrong form does not warn and
+does not fall back - the resource fails during `Application` construction and **no
+window is ever created**, which on a windowed desktop app looks like a silent
+crash. Clean A/B: same file, same build, only the URI changed. The guide now says
+which form is which and what the failure looks like. `ms-appx:///Neu.Uno/...` for
+the high-contrast dictionary was verified correct from the consumer side in the
+same pass.
+
+**4. The guide still named `NeuProgressArcConverter`,** which D12 deleted.
+
+**Verified working from the consumer, in both themes:** implicit styles reaching
+stock markup; `ColorOverrideSource` with a partial palette (a green accent, the
+one from the guide, which the contrast tool passes); `Neu.HighContrast.xaml`
+merged over the whole app; and a `ContentDialog` constructed in C# picking up the
+Neu template from the implicit style - a plain `ContentDialog`, not a subclass,
+which is the case the implicit style does reach.
+
+**One thing that was the app's fault, not the library's,** recorded because it
+will happen to others: the app put `Background="{ThemeResource NeuCanvasBrush}"`
+on its `Page` while scoping `RequestedTheme` to a `Grid` inside it. A theme scope
+reaches descendants only, so in dark theme every control went dark and the canvas
+behind them stayed light. The brush belongs on the same element that carries the
+scope.
+
+**Environment note.** Captures of this app were intermittently disturbed - a run
+would come back with the timer started, the slider moved, or the window
+minimised, none of which the harness does. The seed hook now sets every input it
+reads and prints its own percentage into the caption, so a disturbed run is
+obvious in the image rather than being mistaken for a rendering bug. It was
+mistaken for one once, and cost a wrong reading of the ring fix.

@@ -7,9 +7,18 @@ the keys you are changing.** Later wins.
 ```xml
 <ResourceDictionary.MergedDictionaries>
   <neu:NeuTheme />
-  <ResourceDictionary Source="ms-appx:///MyApp/Theme/MyOverrides.xaml" />
+  <ResourceDictionary Source="ms-appx:///Theme/MyOverrides.xaml" />
 </ResourceDictionary.MergedDictionaries>
 ```
+
+**Mind the URI.** A dictionary in *your app* is `ms-appx:///Theme/MyOverrides.xaml`
+with no assembly segment. The assembly-qualified form is for dictionaries in a
+*library* - `ms-appx:///Neu.Uno/Theme/Neu.HighContrast.xaml` is right because it
+comes from this package. Writing `ms-appx:///MyApp/Theme/...` for your own file
+does not fall back and does not warn: the resource fails to load during
+`Application` construction and **no window is ever created**, which looks like a
+crash with no error, because a desktop Uno app is windowed and has nowhere to
+print one.
 
 Colours are the one exception with a dedicated hook, because they are the thing
 people change first - see below.
@@ -22,7 +31,7 @@ Pass your dictionary to `ColorOverrideSource`. It is merged after the Neu
 defaults, so you restate only the keys you are changing:
 
 ```xml
-<neu:NeuTheme ColorOverrideSource="ms-appx:///MyApp/Theme/Palette.xaml" />
+<neu:NeuTheme ColorOverrideSource="ms-appx:///Theme/Palette.xaml" />
 ```
 
 `Palette.xaml` takes the same `ThemeDictionaries` shape as `Tokens.Colors.xaml`.
@@ -350,6 +359,11 @@ high-contrast variant of your own, keep it inner.
   its own canvas, outside the XAML opacity pipeline. Fading a subtree fades the
   content and leaves the surface at full strength. Swap the brush or the
   collection instead.
-- **`NeuVisibilityConverter`** is internal. It works around two controls and is not
-  part of the library's surface. `NeuProgressArcConverter` is public, but its
-  geometry defaults have to match the template that uses it.
+- **`NeuVisibilityConverter`** is internal. It works around two controls and is
+  not part of the library's surface.
+- **`NeuProgressArc`** is public - the attached property that draws the
+  determinate ring. It reads the ring's own `Minimum`, `Maximum` and `Value`, and
+  takes its geometry from the shape it is attached to, so a resized ring needs no
+  configuration. Give that shape `StrokeDashCap="Flat"`: a round cap on a
+  zero-length dash paints a dot, so a ring at its minimum would show progress it
+  does not have.
