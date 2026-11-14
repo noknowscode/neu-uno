@@ -1,3 +1,5 @@
+> **Moved to uno-lab.** This project now lives in the `neu-uno/` folder of [noknowscode/uno-lab](https://github.com/noknowscode/uno-lab/tree/main/neu-uno) (private). This repository is archived and kept for its history.
+
 # Neu.Uno
 
 A neumorphism theme for [Uno Platform](https://platform.uno): warm plaster tokens, a
